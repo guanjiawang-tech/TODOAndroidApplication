@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.todoapplication.ui.home.HomeScreen
+import com.example.todoapplication.ui.profile.UserScreen
 import com.example.todoapplication.ui.theme.TODOApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -66,50 +67,9 @@ fun AppLayout() {
         ) {
 
             when(selectedTab){
-                0 -> HomePage()
-                1 -> UserPage()
+                0 -> HomeScreen()
+                1 -> UserScreen()
             }
-        }
-    }
-}
-
-@Composable
-fun UserPage() {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // TODO: To Show User Page
-        Text("User Page Show")
-    }
-}
-
-@Composable
-fun HomePage() {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Header
-        // TODO: To Show Select Calendar
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(2f)
-                .background(Color(0xFF90CAF9)), // 蓝色背景
-            contentAlignment = Alignment.Center
-        ) {
-            Text("Select Calendar", color = Color.White)
-        }
-
-        // Main Part
-        //  TODO: To Show TODO List
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(5f)
-                .background(Color(0xFFBBDEFB)), // 浅蓝背景
-            contentAlignment = Alignment.Center
-        ) {
-            Text("TODO List")
         }
     }
 }
@@ -117,6 +77,8 @@ fun HomePage() {
 @Composable
 fun BottomMenu(selectedTabBar : Int, onTabSelected: (Int) -> Unit) {
     // TODO: Make and Show Botton Menu
+
+    val menuItems = listOf("首页", "我的")
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -125,20 +87,15 @@ fun BottomMenu(selectedTabBar : Int, onTabSelected: (Int) -> Unit) {
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            "首页",
-            color = Color.White,
-            modifier = Modifier.clickable(){
-                onTabSelected(0)
-            }
-        )
-        Text(
-            "我的",
-            color = Color.White,
-            modifier = Modifier.clickable(){
-                onTabSelected(1)
-            }
-        )
+        menuItems.forEachIndexed { index, item ->
+            Text(
+                item,
+                color = Color.White,
+                modifier = Modifier.clickable(){
+                    onTabSelected(index)
+                }.padding(vertical = 10.dp, horizontal = 50.dp)
+            )
+        }
     }
 }
 
