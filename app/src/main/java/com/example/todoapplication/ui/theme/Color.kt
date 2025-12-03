@@ -16,3 +16,7 @@ val LightBlue = Color(0xFFBBDEFB)
 val BlueNormal = Color(0xFF90CAF9)
 
 val DarkBlue = Color(0xFF1976D2)
+
+val SkyBlue = Color(0xFFE7F3FF)
+
+val Gray500 = Color(0xFF9E9E9E)

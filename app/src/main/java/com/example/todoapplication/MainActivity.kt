@@ -33,7 +33,8 @@ import androidx.compose.ui.unit.dp
 import com.example.todoapplication.ui.home.HomeScreen
 import com.example.todoapplication.ui.profile.UserScreen
 import com.example.todoapplication.ui.theme.DarkBlue
-import com.example.todoapplication.ui.theme.LightBlue
+import com.example.todoapplication.ui.theme.Gray500
+import com.example.todoapplication.ui.theme.SkyBlue
 import com.example.todoapplication.ui.theme.TODOApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -94,11 +95,12 @@ fun BottomMenu(selectedTabBar : Int, onTabSelected: (Int) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .background(LightBlue),
+            .background(SkyBlue),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
         menuItems.forEachIndexed { index, item ->
+            //  component for tool bar
             NavigationBarItem(
                 selected = selectedTabBar == index,
                 onClick = { onTabSelected(index) },
@@ -115,8 +117,8 @@ fun BottomMenu(selectedTabBar : Int, onTabSelected: (Int) -> Unit) {
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = DarkBlue,
                     selectedTextColor = DarkBlue,
-                    unselectedIconColor = Color.White,
-                    unselectedTextColor = Color.White,
+                    unselectedIconColor = Gray500,
+                    unselectedTextColor = Gray500,
                     indicatorColor = Color.Transparent
                 )
             )
