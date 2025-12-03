@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.example.todoapplication.ui.theme.BlueNormal
+import com.example.todoapplication.ui.theme.LightBlue
 
 @Composable
 fun HomeScreen() {
@@ -25,7 +27,7 @@ fun HomeScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(2f)
-                .background(Color(0xFF90CAF9)), // 蓝色背景
+                .background(BlueNormal), // 蓝色背景
             contentAlignment = Alignment.Center
         ) {
             Text("Select Calendar", color = Color.White)
@@ -37,7 +39,7 @@ fun HomeScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(5f)
-                .background(Color(0xFFBBDEFB)), // 浅蓝背景
+                .background(LightBlue),
             contentAlignment = Alignment.Center
         ) {
             Text("TODO List")
