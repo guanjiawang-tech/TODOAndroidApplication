@@ -20,3 +20,9 @@ val DarkBlue = Color(0xFF1976D2)
 val SkyBlue = Color(0xFFE7F3FF)
 
 val Gray500 = Color(0xFF9E9E9E)
+
+val LightGray = Color(0xFFEEEEEE)
+
+val TealSoft = Color(0xFF3EBDBE)
+
+val CoralRed = Color(0xFFEA6C62)
