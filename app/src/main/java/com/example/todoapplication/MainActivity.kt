@@ -30,7 +30,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.todoapplication.data.local.UserStorage
 import com.example.todoapplication.ui.home.HomeScreen
+import com.example.todoapplication.ui.login.LoginScreen
 import com.example.todoapplication.ui.profile.UserScreen
 import com.example.todoapplication.ui.theme.DarkBlue
 import com.example.todoapplication.ui.theme.Gray500
@@ -40,11 +42,23 @@ import com.example.todoapplication.ui.theme.TODOApplicationTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // init files
+        UserStorage.initStorage(this)
+
+        val storedUser = UserStorage.getUser(this)
+
         enableEdgeToEdge()
         setContent {
             // ===================== To Do Application Main Activity ===================== //
             TODOApplicationTheme {
-                AppLayout()
+                if (storedUser == null) {
+                    LoginScreen { username ->
+                        UserStorage.saveUser(this, username)
+                    }
+                } else {
+                    AppLayout()  // Login Success
+                }
             }
         }
     }
