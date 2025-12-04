@@ -26,3 +26,5 @@ val LightGray = Color(0xFFEEEEEE)
 val TealSoft = Color(0xFF3EBDBE)
 
 val CoralRed = Color(0xFFEA6C62)
+
+val PureWhite = Color(0xFFFFFFFF)
