@@ -3,6 +3,7 @@
  * */
 package com.example.todoapplication.ui.login
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,20 +37,31 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import com.example.todoapplication.R
+import com.example.todoapplication.data.api.ApiService
+import com.example.todoapplication.data.api.login
+import com.example.todoapplication.data.api.model.LoginRequest
+import com.example.todoapplication.data.local.UserStorage
 import com.example.todoapplication.ui.components.Lines
 import com.example.todoapplication.ui.theme.DarkBlue
 import com.example.todoapplication.ui.theme.PureWhite
 import com.example.todoapplication.ui.theme.SkyBlue
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: (String) -> Unit,
-    onSkipLogin: () -> Unit
+    onSkipLogin: () -> Unit,
+    apiService: ApiService
 ) {
     //  TODO: Login Page
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val context = LocalContext.current
+
+    val scope = rememberCoroutineScope()
 
     //  ====================  CSS
     /**
@@ -118,7 +130,16 @@ fun LoginScreen(
                 // 登录按钮
                 Button(
                     onClick = {
-
+                        scope.launch {
+                            val response = login(username, password)
+                            if (response != null && response.code) {
+                                UserStorage.saveUser( context, username)
+                                onLoginSuccess(username)
+//                                println("登录成功: ${response.userId}")
+                            } else {
+//                                println("登录失败")
+                            }
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()

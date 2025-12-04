@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.todoapplication.data.api.Client.apiService
 import com.example.todoapplication.data.local.UserStorage
 import com.example.todoapplication.ui.home.HomeScreen
 import com.example.todoapplication.ui.login.LoginScreen
@@ -54,6 +55,7 @@ class MainActivity : ComponentActivity() {
 
                 if (user == null) {
                     LoginScreen(
+                        apiService = apiService,
                         onLoginSuccess = { username ->
                             UserStorage.saveUser(this, username)
                             user = username // 触发 Compose 重组，显示主页
