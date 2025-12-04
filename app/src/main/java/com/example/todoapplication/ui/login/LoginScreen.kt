@@ -5,6 +5,7 @@ package com.example.todoapplication.ui.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,7 +43,10 @@ import com.example.todoapplication.ui.theme.PureWhite
 import com.example.todoapplication.ui.theme.SkyBlue
 
 @Composable
-fun LoginScreen(onLoginSuccess: (String) -> Unit) {
+fun LoginScreen(
+    onLoginSuccess: (String) -> Unit,
+    onSkipLogin: () -> Unit
+) {
     //  TODO: Login Page
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -125,10 +129,17 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Login", fontSize = MaterialTheme.typography.titleMedium.fontSize)
+                    Text("登录/注册", fontSize = MaterialTheme.typography.titleMedium.fontSize)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
+
+                Text(
+                    text = "提示：如果数据库内没有对应账号，任意账号和密码登录后会自动创建新用户。",
+                    color = DarkBlue,
+                    modifier = Modifier.padding(top = 10.dp),
+                    textAlign = TextAlign.Center
+                )
 
                 // OR
                 Row(
@@ -142,9 +153,11 @@ fun LoginScreen(onLoginSuccess: (String) -> Unit) {
                 }
 
                 Text(
-                    text = "忘记密码了？",
+                    text = "跳过登录",
                     color = DarkBlue,
-                    modifier = Modifier.padding(top = 10.dp),
+                    modifier = Modifier
+                        .padding(top = 10.dp)
+                        .clickable { onSkipLogin() },
                     textAlign = TextAlign.Center
                 )
             }

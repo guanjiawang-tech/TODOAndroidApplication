@@ -46,16 +46,23 @@ class MainActivity : ComponentActivity() {
         // init files
         UserStorage.initStorage(this)
 
-        val storedUser = UserStorage.getUser(this)
-
         enableEdgeToEdge()
         setContent {
             // ===================== To Do Application Main Activity ===================== //
             TODOApplicationTheme {
-                if (storedUser == null) {
-                    LoginScreen { username ->
-                        UserStorage.saveUser(this, username)
-                    }
+                var user by remember { mutableStateOf(UserStorage.getUser(this)) }
+
+                if (user == null) {
+                    LoginScreen(
+                        onLoginSuccess = { username ->
+                            UserStorage.saveUser(this, username)
+                            user = username // 触发 Compose 重组，显示主页
+                        },
+                        onSkipLogin = {
+                            UserStorage.saveUser(this, "guest")
+                            user = "guest" // 触发 Compose 重组，显示主页
+                        }
+                    )
                 } else {
                     AppLayout()  // Login Success
                 }

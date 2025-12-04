@@ -7,6 +7,7 @@ import java.io.File
 object UserStorage {
 
     private const val FILE_NAME = "data.json"
+    private const val TEMP_USER = "guest"
 
     fun initStorage(context: Context) {
         val file = File(context.filesDir, FILE_NAME)
@@ -34,5 +35,16 @@ object UserStorage {
         val json = JSONObject(file.readText())
         json.put("user", username)
         file.writeText(json.toString())
+    }
+
+    fun clearUser(context: Context) {
+        val file = File(context.filesDir, FILE_NAME)
+        if (file.exists()) {
+            val defaultData = JSONObject().apply {
+                put("user", JSONObject.NULL)
+                put("todos", emptyList<String>())
+            }
+            file.writeText(defaultData.toString())
+        }
     }
 }
