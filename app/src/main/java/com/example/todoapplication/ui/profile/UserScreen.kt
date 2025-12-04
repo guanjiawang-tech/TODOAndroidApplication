@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.example.todoapplication.data.local.UserStorage
+import com.example.todoapplication.data.local.readUserFile
 import com.example.todoapplication.ui.theme.DarkBlue
 
 @Composable
@@ -45,5 +46,24 @@ fun UserScreen() {
         ) {
             Text("清除缓存", fontSize = MaterialTheme.typography.titleMedium.fontSize)
         }
+
+        val fileContent = readUserFile(context)
+        Button(
+            onClick = {
+                println("data.json 内容: $fileContent")
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            shape = RoundedCornerShape(6.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = DarkBlue,
+                contentColor = Color.White
+            )
+        ) {
+            Text("读取文件", fontSize = MaterialTheme.typography.titleMedium.fontSize)
+        }
+
+
     }
 }
