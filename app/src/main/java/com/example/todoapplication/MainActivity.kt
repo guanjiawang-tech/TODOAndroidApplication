@@ -23,15 +23,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.todoapplication.data.api.Client.apiService
+import com.example.todoapplication.data.local.TodoStorage
 import com.example.todoapplication.data.local.UserStorage
+import com.example.todoapplication.data.local.parseUserFile
+import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.ui.home.HomeScreen
 import com.example.todoapplication.ui.login.LoginScreen
 import com.example.todoapplication.ui.profile.UserScreen
@@ -39,6 +44,7 @@ import com.example.todoapplication.ui.theme.DarkBlue
 import com.example.todoapplication.ui.theme.Gray500
 import com.example.todoapplication.ui.theme.SkyBlue
 import com.example.todoapplication.ui.theme.TODOApplicationTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +58,11 @@ class MainActivity : ComponentActivity() {
             // ===================== To Do Application Main Activity ===================== //
             TODOApplicationTheme {
                 var user by remember { mutableStateOf(UserStorage.getUser(this)) }
+                val scope = rememberCoroutineScope()
+
+                val context = LocalContext.current
+                //  本地文件
+                val fileContent = parseUserFile(context)
 
                 if (user == null) {
                     LoginScreen(
@@ -65,6 +76,19 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 } else {
+                    scope.launch {
+                        val repo = ToDoRepository()
+                        val todoResponse  = repo.GetTodoList(fileContent?.id ?: "")
+
+                        if (todoResponse?.code == true && !todoResponse.data.isNullOrEmpty()) {
+                            TodoStorage.saveTodo(context, todoResponse.data!!)  // 传入真正的 List<Todo>
+                            println("📁 已写入文件 --> ${todoResponse.data!!.size} 条记录")
+                        } else {
+                            println("⚠ 未获取到 Todo 数据")
+                        }
+
+//                        println("List -> $todoResponse ")
+                    }
                     AppLayout()  // Login Success
                 }
             }

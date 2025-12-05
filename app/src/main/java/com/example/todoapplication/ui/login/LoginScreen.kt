@@ -43,6 +43,7 @@ import com.example.todoapplication.R
 import com.example.todoapplication.data.api.ApiService
 import com.example.todoapplication.data.api.model.LoginRequest
 import com.example.todoapplication.data.local.UserStorage
+import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.data.repository.UserRepository
 import com.example.todoapplication.ui.components.Lines
 import com.example.todoapplication.ui.theme.DarkBlue
@@ -61,7 +62,7 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
     //  api请求
-    val repository = UserRepository()
+    val UserRepository = UserRepository()
 
     val scope = rememberCoroutineScope()
 
@@ -133,7 +134,7 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         scope.launch {
-                            val response = repository.Login(username, password)
+                            val response = UserRepository.Login(username, password)
                             println("登录成功: ${response}")
                             if (response != null && response.code) {
                                 UserStorage.saveUser(
@@ -142,7 +143,6 @@ fun LoginScreen(
                                     response.data?.userId.toString()
                                 )
                                 onLoginSuccess(username)
-//                                println("登录成功: ${response.userId}")
                             } else {
 //                                println("登录失败")
                             }

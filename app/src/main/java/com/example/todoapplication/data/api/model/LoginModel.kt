@@ -18,9 +18,3 @@ data class LoginResponse(
     val msg: String,
     val data: UserResponse? = null
 )
-
-data class TodoResponse(
-    val code: Boolean,
-    val msg: String,
-    val data: List<Todo>?
-)

@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -14,16 +15,20 @@ import com.example.todoapplication.data.local.UserStorage
 import com.example.todoapplication.data.local.parseUserFile
 import com.example.todoapplication.data.model.ProfileMenuItem
 import com.example.todoapplication.data.model.StripConfig
+import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.ui.components.Lines
 import com.example.todoapplication.ui.profile.components.HeadCard
 import com.example.todoapplication.ui.profile.components.MenuList
 import com.example.todoapplication.ui.theme.SkyBlue
+import kotlinx.coroutines.launch
 
 @Composable
 fun UserScreen() {
 
     val context = LocalContext.current
     val fileContent = parseUserFile(context)
+
+//    val scope = rememberCoroutineScope()
 
     val menuItems = listOf(
         ProfileMenuItem(
@@ -42,7 +47,13 @@ fun UserScreen() {
             "退出登录",
             StripConfig(isShow = true, stripHeight = 16, stripColor = Color.Blue),
             true,
-            onClick = { println("点击了退出登录") }
+            onClick = {
+//                scope.launch {
+//                    val repo = ToDoRepository()
+//                    val todoList = repo.GetTodoList("674146ce439a8591c4a5841a")
+//                    println("List -> $todoList")
+//                }
+            }
         ),
     )
 
