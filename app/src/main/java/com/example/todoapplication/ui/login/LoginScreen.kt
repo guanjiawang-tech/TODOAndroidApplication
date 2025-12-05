@@ -41,9 +41,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import com.example.todoapplication.R
 import com.example.todoapplication.data.api.ApiService
-import com.example.todoapplication.data.api.login
 import com.example.todoapplication.data.api.model.LoginRequest
 import com.example.todoapplication.data.local.UserStorage
+import com.example.todoapplication.data.repository.UserRepository
 import com.example.todoapplication.ui.components.Lines
 import com.example.todoapplication.ui.theme.DarkBlue
 import com.example.todoapplication.ui.theme.PureWhite
@@ -60,6 +60,8 @@ fun LoginScreen(
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
+    //  api请求
+    val repository = UserRepository()
 
     val scope = rememberCoroutineScope()
 
@@ -131,7 +133,7 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         scope.launch {
-                            val response = login(username, password)
+                            val response = repository.Login(username, password)
                             println("登录成功: ${response}")
                             if (response != null && response.code) {
                                 UserStorage.saveUser(
