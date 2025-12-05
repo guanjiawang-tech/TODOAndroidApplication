@@ -1,5 +1,6 @@
 package com.example.todoapplication.data.api
 
+import com.example.todoapplication.data.api.model.InsertTodoRequest
 import com.example.todoapplication.data.api.model.LoginRequest
 import com.example.todoapplication.data.api.model.LoginResponse
 import com.example.todoapplication.data.api.model.TodoRequest
@@ -32,6 +33,14 @@ interface ApiService {
     @PATCH("/api/updateTodo")
     suspend fun updateTodo(
         @Body request: UpdateTodoRequest
+    ): TodoResponse
+
+    /**
+     * 插入用户 To do 列表
+     */
+    @PATCH("/api/insertTodo")
+    suspend fun insertTodo(
+        @Body request: InsertTodoRequest
     ): TodoResponse
 
 }

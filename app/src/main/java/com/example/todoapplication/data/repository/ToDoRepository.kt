@@ -1,6 +1,7 @@
 package com.example.todoapplication.data.repository
 
 import com.example.todoapplication.data.api.Client
+import com.example.todoapplication.data.api.model.InsertTodoRequest
 import com.example.todoapplication.data.api.model.TodoRequest
 import com.example.todoapplication.data.api.model.TodoResponse
 import com.example.todoapplication.data.api.model.UpdateTodoRequest
@@ -31,4 +32,29 @@ class ToDoRepository {
             null
         }
     }
+
+    /**
+     * 插入用户 To do 列表
+     */
+    suspend fun insertTodo(
+        todo: InsertTodoRequest
+    ): TodoResponse? {
+        return try {
+            Client.apiService.insertTodo(
+                InsertTodoRequest(
+                    todo.userId,
+                    todo.title,
+                    todo.content,
+                    todo.deadline,
+                    todo.status,
+                    todo.priority,
+                    todo.repeatType,
+                )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
 }

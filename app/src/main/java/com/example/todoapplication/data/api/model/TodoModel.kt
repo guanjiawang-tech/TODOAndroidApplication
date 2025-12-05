@@ -18,3 +18,13 @@ data class UpdateTodoRequest(
     val todoId: String? = null,
     val updates: TodoUpdate? = null,
 )
+
+data class InsertTodoRequest(
+    val userId: String,
+    val title: String,
+    val content: String,
+    val deadline: String?,
+    val status: Int,
+    val priority: Int,
+    val repeatType: Int
+)

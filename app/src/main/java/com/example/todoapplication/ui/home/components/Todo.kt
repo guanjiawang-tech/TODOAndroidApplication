@@ -27,9 +27,11 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -44,7 +46,6 @@ import com.example.todoapplication.data.local.TodoStorage
 import com.example.todoapplication.data.model.Todo
 import com.example.todoapplication.data.model.TodoUpdate
 import com.example.todoapplication.data.repository.ToDoRepository
-import com.example.todoapplication.ui.components.EditTodoDialog
 import com.example.todoapplication.ui.theme.CoralRed
 import com.example.todoapplication.ui.theme.Gray500
 import com.example.todoapplication.ui.theme.TealSoft
@@ -56,8 +57,6 @@ import kotlin.math.roundToInt
 @Composable
 fun Todo(
     data: Todo?,
-//    title: String = "Title",
-//    Checked : Boolean = false,
     revealWidthDp: Dp = 96.dp,         //  Translation width
     onEdit: (String) -> Unit = {
 
@@ -71,17 +70,56 @@ fun Todo(
 
     val offsetX = remember { Animatable(0f) }
     val isChecked = remember { mutableStateOf((data?.status ?: 0) == 1) }
+    var todo by remember { mutableStateOf(data!!) }
 
     // 控制 Dialog 显示
     val showDialog = remember { mutableStateOf(false) }
 
     if (showDialog.value) {
         EditTodoDialog(
-            defaultText = data?.title ?: "Title",
+            titleDefault = data?.title ?: "",
+            contentDefault = data?.content ?: "",
+            deadlineDefault = data?.deadline,
+            priorityDefault = data?.priority ?: 1,
+            repeatTypeDefault = data?.repeatType == 1,
             onDismiss = { showDialog.value = false },
-            onConfirm = { newText ->
+            onConfirm = { newTitle, newContent, newDeadline, newPriority, newRepeat ->
                 showDialog.value = false
-                onEdit(newText)    // result
+                // 更新本地数据
+                val updatedTodo = TodoUpdate(
+                    title = newTitle,
+                    content = newContent,
+                    deadline = newDeadline,
+                    priority = newPriority,
+                    repeatType = if (newRepeat) 1 else 0
+                )
+                TodoStorage.updateTodo(context, todoId = data?._id ?: "", update = updatedTodo)
+                //  数据库更新  status
+                val repo = ToDoRepository()
+                scope.launch {
+                    try {
+                        val todoResponse = repo.updateTodo(
+                            todoId = data?._id ?: "",
+                            updates = TodoUpdate(
+                                title = newTitle,
+                                content = newContent,
+                                deadline = newDeadline,
+                                priority = newPriority,
+                                repeatType = if (newRepeat) 1 else 0
+                            )
+                        )
+                        if (todoResponse?.code == true) {
+                            println("后端更新成功")
+                        } else {
+                            println("后端更新失败")
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+                // 调用回调
+                onEdit(newTitle) // 或者改成返回完整数据的回调
             }
         )
     }
@@ -151,24 +189,26 @@ fun Todo(
                     .background(Color.White)
             ) {
                 Checkbox(
-                    checked = isChecked.value,
+                    checked = todo.status == 1,
                     onCheckedChange = {
                         //  本地更新  status
+                        val newStatus = if (todo.status == 1) 0 else 1
                         TodoStorage.updateTodo(
                             context,
                             todoId = data?._id ?: "",
                             update = TodoUpdate(
-                                status = if ((data?.status ?: 0) == 1) 0 else 1
+                                status = newStatus
                             )
                         )
                         //  数据库更新  status
+                        todo = todo.copy(status = newStatus)
                         val repo = ToDoRepository()
                         scope.launch {
                             try {
                                 val todoResponse = repo.updateTodo(
                                     todoId = data?._id ?: "",
                                     updates = TodoUpdate(
-                                        status = if ((data?.status ?: 0) == 1) 0 else 1
+                                        status = newStatus
                                     )
                                 )
                                 if (todoResponse?.code == true) {
