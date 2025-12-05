@@ -2,6 +2,7 @@ package com.example.todoapplication.data.local
 
 import android.content.Context
 import com.example.todoapplication.data.model.Todo
+import com.example.todoapplication.data.model.TodoUpdate
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -43,4 +44,55 @@ object TodoStorage {
         // 写回文件
         file.writeText(json.toString())
     }
+
+
+    /**
+     * 修改本地文件
+     * */
+    private fun updateToMap(update: TodoUpdate): Map<String, Any?> {
+        return mapOf(
+            "title" to update.title,
+            "content" to update.content,
+            "deadline" to update.deadline,
+            "status" to update.status,
+            "priority" to update.priority,
+            "repeatType" to update.repeatType
+        ).filterValues { it != null }
+    }
+
+    fun updateTodo(
+        context: Context,
+        todoId: String,
+        updates: Map<String, Any?>
+    ): Boolean {
+        val file = File(context.filesDir, FILE_NAME)
+        if (!file.exists()) return false
+
+        val json = JSONObject(file.readText())
+        val todosArray = json.optJSONArray("todos") ?: return false
+
+        for (i in 0 until todosArray.length()) {
+            val item = todosArray.getJSONObject(i)
+
+            if (item.optString("_id") == todoId) {
+                updates.forEach { (key, value) ->
+                    item.put(key, value ?: JSONObject.NULL)
+                }
+
+                json.put("todos", todosArray)
+                file.writeText(json.toString())
+                return true
+            }
+        }
+
+        return false
+    }
+
+    /**
+     * 修改本地文件的便于传参的优化方法
+     * */
+    fun updateTodo(context: Context, todoId: String, update: TodoUpdate): Boolean {
+        return updateTodo(context, todoId, updateToMap(update))
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.example.todoapplication
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -47,6 +48,7 @@ import com.example.todoapplication.ui.theme.TODOApplicationTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -76,6 +78,8 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 } else {
+                    AppLayout()  // Login Success
+
                     scope.launch {
                         val repo = ToDoRepository()
                         val todoResponse  = repo.GetTodoList(fileContent?.id ?: "")
@@ -89,7 +93,6 @@ class MainActivity : ComponentActivity() {
 
 //                        println("List -> $todoResponse ")
                     }
-                    AppLayout()  // Login Success
                 }
             }
         }

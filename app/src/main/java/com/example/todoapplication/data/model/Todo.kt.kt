@@ -11,3 +11,12 @@ data class Todo(
     val priority: Int,
     val repeatType: Int
 )
+
+data class TodoUpdate(
+    val title: String? = null,
+    val content: String? = null,
+    val deadline: String? = null,
+    val status: Int? = null,
+    val priority: Int? = null,
+    val repeatType: Int? = null
+)

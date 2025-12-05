@@ -24,13 +24,16 @@ import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.todoapplication.data.local.parseUserFile
 import com.example.todoapplication.ui.home.components.Todo
 import com.example.todoapplication.ui.theme.BlueNormal
 import com.example.todoapplication.ui.theme.SkyBlue
 
 @Composable
 fun HomeScreen() {
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -120,13 +123,20 @@ private fun RowScope.onMenuClick() {
 fun TodoList() {
     val scrollState = rememberScrollState()
 
+
+    val context = LocalContext.current
+    val fileContent = parseUserFile(context)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        repeat(20) { index ->
-            Todo()
+        repeat(fileContent?.todos?.size ?: 0) { index ->
+            Todo(
+                title = fileContent?.todos[index]?.title ?: "title",
+                Checked = fileContent?.todos[index]?.status != 0
+            )
         }
     }
 

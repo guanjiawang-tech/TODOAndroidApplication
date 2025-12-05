@@ -7,6 +7,7 @@ import android.R
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.todoapplication.ui.components.EditTodoDialog
 import com.example.todoapplication.ui.theme.CoralRed
 import com.example.todoapplication.ui.theme.Gray500
 import com.example.todoapplication.ui.theme.TealSoft
@@ -52,7 +54,9 @@ fun Todo(
     title: String = "Title",
     Checked : Boolean = false,
     revealWidthDp: Dp = 96.dp,         //  Translation width
-    onEdit: () -> Unit = {},
+    onEdit: (String) -> Unit = {
+
+    },
     onDelete: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
@@ -62,10 +66,27 @@ fun Todo(
     val offsetX = remember { Animatable(0f) }
     val isChecked = remember { mutableStateOf(Checked) }
 
+    // 控制 Dialog 显示
+    val showDialog = remember { mutableStateOf(false) }
+
+    if (showDialog.value) {
+        EditTodoDialog(
+            defaultText = title,
+            onDismiss = { showDialog.value = false },
+            onConfirm = { newText ->
+                showDialog.value = false
+                onEdit(newText)    // result
+            }
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
+            .clickable( onClick = {
+                showDialog.value = true
+            }),
     ) {
         // backend card
         Row(
@@ -76,7 +97,7 @@ fun Todo(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = { onEdit() },
+                onClick = { showDialog.value = true },
                 modifier = Modifier
                     .background(TealSoft)
                 ) {
