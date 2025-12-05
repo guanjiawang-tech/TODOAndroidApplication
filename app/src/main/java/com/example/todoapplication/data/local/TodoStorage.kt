@@ -90,6 +90,17 @@ object TodoStorage {
 
     /**
      * 修改本地文件的便于传参的优化方法
+     * @Usage
+     *
+     * TodoStorage.updateTodo(
+     *     context,
+     *     todoId = "674147ff2b338f91fef87cb2",
+     *     update = TodoUpdate(
+     *         status = 1,
+     *         priority = 2,
+     *         deadline = "2025-12-07T18:00:00Z"
+     *     )
+     * )
      * */
     fun updateTodo(context: Context, todoId: String, update: TodoUpdate): Boolean {
         return updateTodo(context, todoId, updateToMap(update))

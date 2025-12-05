@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -86,9 +85,9 @@ class MainActivity : ComponentActivity() {
 
                         if (todoResponse?.code == true && !todoResponse.data.isNullOrEmpty()) {
                             TodoStorage.saveTodo(context, todoResponse.data!!)  // 传入真正的 List<Todo>
-                            println("📁 已写入文件 --> ${todoResponse.data!!.size} 条记录")
+                            println("已写入文件 --> ${todoResponse.data!!.size} 条记录")
                         } else {
-                            println("⚠ 未获取到 Todo 数据")
+                            println("未获取到 Todo 数据")
                         }
 
 //                        println("List -> $todoResponse ")

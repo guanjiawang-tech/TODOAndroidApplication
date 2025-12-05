@@ -3,7 +3,6 @@
  * */
 package com.example.todoapplication.ui.home.components
 
-import android.R
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -35,11 +34,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.todoapplication.data.local.TodoStorage
+import com.example.todoapplication.data.model.Todo
+import com.example.todoapplication.data.model.TodoUpdate
 import com.example.todoapplication.ui.components.EditTodoDialog
 import com.example.todoapplication.ui.theme.CoralRed
 import com.example.todoapplication.ui.theme.Gray500
@@ -51,27 +54,29 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Todo(
-    title: String = "Title",
-    Checked : Boolean = false,
+    data: Todo?,
+//    title: String = "Title",
+//    Checked : Boolean = false,
     revealWidthDp: Dp = 96.dp,         //  Translation width
     onEdit: (String) -> Unit = {
 
     },
     onDelete: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
     val revealWidthPx = with(density) { revealWidthDp.toPx() }
 
     val offsetX = remember { Animatable(0f) }
-    val isChecked = remember { mutableStateOf(Checked) }
+    val isChecked = remember { mutableStateOf((data?.status ?: 0) == 1) }
 
     // 控制 Dialog 显示
     val showDialog = remember { mutableStateOf(false) }
 
     if (showDialog.value) {
         EditTodoDialog(
-            defaultText = title,
+            defaultText = data?.title ?: "Title",
             onDismiss = { showDialog.value = false },
             onConfirm = { newText ->
                 showDialog.value = false
@@ -146,10 +151,19 @@ fun Todo(
             ) {
                 Checkbox(
                     checked = isChecked.value,
-                    onCheckedChange = { isChecked.value = it }
+                    onCheckedChange = {
+                        TodoStorage.updateTodo(
+                            context,
+                            todoId = data?._id ?: "",
+                            update = TodoUpdate(
+                                status = if ((data?.status ?: 0) == 1) 0 else 1
+                            )
+                        )
+                        isChecked.value = it
+                    }
                 )
                 Text(
-                    text = title,
+                    text = data?.title ?: "Title",
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     color = if (isChecked.value) Color.Gray else Color.Black,

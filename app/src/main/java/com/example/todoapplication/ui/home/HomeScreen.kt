@@ -20,7 +20,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -134,8 +133,9 @@ fun TodoList() {
     ) {
         repeat(fileContent?.todos?.size ?: 0) { index ->
             Todo(
-                title = fileContent?.todos[index]?.title ?: "title",
-                Checked = fileContent?.todos[index]?.status != 0
+                data = fileContent?.todos[index],
+//                title = fileContent?.todos[index]?.title ?: "title",
+//                Checked = fileContent?.todos[index]?.status != 0
             )
         }
     }
