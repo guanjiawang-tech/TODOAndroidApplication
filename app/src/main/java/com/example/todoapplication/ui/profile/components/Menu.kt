@@ -2,6 +2,7 @@ package com.example.todoapplication.ui.profile.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,12 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.todoapplication.R
-
-data class StripConfig(
-    val isShow: Boolean = false,
-    val stripHeight: Int = 12,
-    val stripColor: Color = Color.Blue
-)
+import com.example.todoapplication.data.model.StripConfig
 
 @Composable
 fun MenuList(
@@ -29,13 +25,15 @@ fun MenuList(
     titleImage: Int? = null,
     subTitle: String? = null,
     rightSlot: String? = null,
-    showArrow: Boolean = false
+    showArrow: Boolean = false,
+    onClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.White, RoundedCornerShape(0.dp))
-            .padding(horizontal = 22.dp, vertical = 14.dp),
+            .padding(horizontal = 22.dp, vertical = 14.dp)
+            .clickable { onClick() },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

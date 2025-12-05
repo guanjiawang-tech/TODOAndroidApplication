@@ -57,12 +57,11 @@ class MainActivity : ComponentActivity() {
                     LoginScreen(
                         apiService = apiService,
                         onLoginSuccess = { username ->
-                            UserStorage.saveUser(this, username)
-                            user = username // 触发 Compose 重组，显示主页
+                            user = username // Reload
                         },
                         onSkipLogin = {
-                            UserStorage.saveUser(this, "guest")
-                            user = "guest" // 触发 Compose 重组，显示主页
+                            UserStorage.saveUser(this, "guest", "guest")
+                            user = "guest"
                         }
                     )
                 } else {

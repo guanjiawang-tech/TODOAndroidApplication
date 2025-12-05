@@ -18,6 +18,7 @@ object UserStorage {
         if (!file.exists()) {
             // 创建并写入默认 JSON 文件
             val defaultData = JSONObject().apply {
+                put("_id", JSONObject.NULL)
                 put("user", JSONObject.NULL)
                 put("todos", emptyList<String>())
             }
@@ -33,9 +34,10 @@ object UserStorage {
         return if (json.isNull("user")) null else json.getString("user")
     }
 
-    fun saveUser(context: Context, username: String) {
+    fun saveUser(context: Context, username: String, id: String) {
         val file = File(context.filesDir, FILE_NAME)
         val json = JSONObject(file.readText())
+        json.put("_id", id)
         json.put("user", username)
         file.writeText(json.toString())
     }
@@ -44,6 +46,7 @@ object UserStorage {
         val file = File(context.filesDir, FILE_NAME)
         if (file.exists()) {
             val defaultData = JSONObject().apply {
+                put("_id", JSONObject.NULL)
                 put("user", JSONObject.NULL)
                 put("todos", emptyList<String>())
             }

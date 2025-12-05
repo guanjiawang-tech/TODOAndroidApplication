@@ -6,32 +6,18 @@ package com.example.todoapplication.ui.profile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import com.example.todoapplication.data.local.UserStorage
 import com.example.todoapplication.data.local.parseUserFile
+import com.example.todoapplication.data.model.ProfileMenuItem
+import com.example.todoapplication.data.model.StripConfig
+import com.example.todoapplication.ui.components.Lines
 import com.example.todoapplication.ui.profile.components.HeadCard
 import com.example.todoapplication.ui.profile.components.MenuList
-import com.example.todoapplication.ui.profile.components.StripConfig
-import com.example.todoapplication.ui.theme.DarkBlue
 import com.example.todoapplication.ui.theme.SkyBlue
-
-// 数据类定义菜单项
-data class ProfileMenuItem(
-    val title: String,
-    val strip: StripConfig = StripConfig(isShow = false, stripHeight = 0, stripColor = Color.Transparent),
-    val showArrow: Boolean = false
-)
 
 @Composable
 fun UserScreen() {
@@ -40,9 +26,24 @@ fun UserScreen() {
     val fileContent = parseUserFile(context)
 
     val menuItems = listOf(
-        ProfileMenuItem("清除缓存", StripConfig(isShow = true, stripHeight = 16, stripColor = Color.Blue), true),
-        ProfileMenuItem("读取文件", StripConfig(isShow = true, stripHeight = 16, stripColor = Color.Green), true),
-        ProfileMenuItem("退出登录", StripConfig(isShow = true, stripHeight = 16, stripColor = Color.Green), true),
+        ProfileMenuItem(
+            "清除缓存",
+            StripConfig(isShow = true, stripHeight = 16, stripColor = Color.Blue),
+            true,
+            onClick = { UserStorage.clearUser(context) }
+        ),
+        ProfileMenuItem(
+            "读取文件",
+            StripConfig(isShow = true, stripHeight = 16, stripColor = Color.Blue),
+            true,
+            onClick = { println("data.json 内容: $fileContent") }
+        ),
+        ProfileMenuItem(
+            "退出登录",
+            StripConfig(isShow = true, stripHeight = 16, stripColor = Color.Blue),
+            true,
+            onClick = { println("点击了退出登录") }
+        ),
     )
 
     Column(
@@ -57,8 +58,10 @@ fun UserScreen() {
             MenuList(
                 title = item.title,
                 strip = item.strip,
-                showArrow = item.showArrow
+                showArrow = item.showArrow,
+                onClick = item.onClick
             )
+            Lines()
         }
 //        Button(
 //            onClick = {

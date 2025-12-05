@@ -132,8 +132,13 @@ fun LoginScreen(
                     onClick = {
                         scope.launch {
                             val response = login(username, password)
+                            println("登录成功: ${response}")
                             if (response != null && response.code) {
-                                UserStorage.saveUser( context, username)
+                                UserStorage.saveUser(
+                                    context,
+                                    response.data?.username.toString(),
+                                    response.data?.userId.toString()
+                                )
                                 onLoginSuccess(username)
 //                                println("登录成功: ${response.userId}")
                             } else {

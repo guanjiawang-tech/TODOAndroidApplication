@@ -6,8 +6,13 @@ data class LoginRequest(
     val password: String
 )
 
+data class UserResponse(
+    val username: String? = null,
+    val userId: String? = null
+)
+
 data class LoginResponse(
     val code: Boolean,
     val msg: String,
-    val userId: String? = null
+    val data: UserResponse? = null
 )
