@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.example.todoapplication.data.local.TodoStorage
 import com.example.todoapplication.data.model.Todo
 import com.example.todoapplication.data.model.TodoUpdate
+import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.ui.components.EditTodoDialog
 import com.example.todoapplication.ui.theme.CoralRed
 import com.example.todoapplication.ui.theme.Gray500
@@ -152,6 +153,7 @@ fun Todo(
                 Checkbox(
                     checked = isChecked.value,
                     onCheckedChange = {
+                        //  本地更新  status
                         TodoStorage.updateTodo(
                             context,
                             todoId = data?._id ?: "",
@@ -159,6 +161,27 @@ fun Todo(
                                 status = if ((data?.status ?: 0) == 1) 0 else 1
                             )
                         )
+                        //  数据库更新  status
+                        val repo = ToDoRepository()
+                        scope.launch {
+                            try {
+                                val todoResponse = repo.updateTodo(
+                                    todoId = data?._id ?: "",
+                                    updates = TodoUpdate(
+                                        status = if ((data?.status ?: 0) == 1) 0 else 1
+                                    )
+                                )
+                                if (todoResponse?.code == true) {
+                                    println("后端更新成功")
+                                } else {
+                                    println("后端更新失败")
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+
+                        //  更新 UI 状态
                         isChecked.value = it
                     }
                 )
