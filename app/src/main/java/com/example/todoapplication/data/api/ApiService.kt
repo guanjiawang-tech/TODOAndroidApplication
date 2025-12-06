@@ -1,5 +1,7 @@
 package com.example.todoapplication.data.api
 
+import com.example.todoapplication.data.api.model.DeleteResponse
+import com.example.todoapplication.data.api.model.DeleteTodoRequest
 import com.example.todoapplication.data.api.model.InsertTodoRequest
 import com.example.todoapplication.data.api.model.LoginRequest
 import com.example.todoapplication.data.api.model.LoginResponse
@@ -43,5 +45,13 @@ interface ApiService {
     suspend fun insertTodo(
         @Body request: InsertTodoRequest
     ): TodoResponseByOne
+
+    /**
+     * 插入用户 To do 列表
+     */
+    @POST("/api/deleteTodo")
+    suspend fun deleteTodo(
+        @Body request: DeleteTodoRequest
+    ): DeleteResponse
 
 }

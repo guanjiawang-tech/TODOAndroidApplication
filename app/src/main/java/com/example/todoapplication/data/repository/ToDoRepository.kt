@@ -1,6 +1,8 @@
 package com.example.todoapplication.data.repository
 
 import com.example.todoapplication.data.api.Client
+import com.example.todoapplication.data.api.model.DeleteResponse
+import com.example.todoapplication.data.api.model.DeleteTodoRequest
 import com.example.todoapplication.data.api.model.InsertTodoRequest
 import com.example.todoapplication.data.api.model.TodoRequest
 import com.example.todoapplication.data.api.model.TodoResponse
@@ -50,6 +52,24 @@ class ToDoRepository {
                     todo.status,
                     todo.priority,
                     todo.repeatType,
+                )
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    /**
+     * 删除 To do 列表
+     */
+    suspend fun deleteTodo(
+        todoId: String
+    ): DeleteResponse? {
+        return try {
+            Client.apiService.deleteTodo(
+                DeleteTodoRequest(
+                    todoId,
                 )
             )
         } catch (e: Exception) {

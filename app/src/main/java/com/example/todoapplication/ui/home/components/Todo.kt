@@ -42,6 +42,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.example.todoapplication.data.api.model.DeleteTodoRequest
 import com.example.todoapplication.data.local.TodoStorage
 import com.example.todoapplication.data.model.Todo
 import com.example.todoapplication.data.model.TodoUpdate
@@ -72,9 +73,13 @@ fun Todo(
     val isChecked = remember { mutableStateOf((data?.status ?: 0) == 1) }
     var todo by remember { mutableStateOf(data!!) }
 
+    val repo = ToDoRepository()
+
     // 控制 Dialog 显示
     val showDialog = remember { mutableStateOf(false) }
+    val showDeleteDialog = remember { mutableStateOf(false) }
 
+    // 添加 to do 修改弹窗
     if (showDialog.value) {
         EditTodoDialog(
             titleDefault = data?.title ?: "",
@@ -96,7 +101,6 @@ fun Todo(
                 )
                 TodoStorage.updateTodo(context, todoId = data?._id ?: "", update = updatedTodo)
                 //  数据库更新  status
-                val repo = ToDoRepository()
                 scope.launch {
                     try {
                         val todoResponse = repo.updateTodo(
@@ -125,6 +129,27 @@ fun Todo(
         )
     }
 
+    // 添加 to do 删除弹窗
+    if (showDeleteDialog.value) {
+        DeleteTodoDialog(
+            onConfirm = {
+                showDeleteDialog.value = false
+
+                // 本地删除
+                TodoStorage.deleteTodo(context, data?._id ?: "")
+
+                // 调用后端删除
+                scope.launch {
+                    val id = data?._id ?: return@launch
+                    repo.deleteTodo(id)
+                }
+
+//                onDelete() // 通知父组件更新列表
+            },
+            onDismiss = { showDeleteDialog.value = false }
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -149,7 +174,7 @@ fun Todo(
                 Icon(Icons.Default.Edit, contentDescription = "编辑", tint = Color.White)
             }
             IconButton(
-                onClick = { onDelete() },
+                onClick = { showDeleteDialog.value = true },
                 modifier = Modifier
                     .background(CoralRed)) {
                 Icon(Icons.Default.Delete, contentDescription = "删除", tint = Color.White)

@@ -20,6 +20,11 @@ data class TodoResponseByOne(
     val data: Todo? = null
 )
 
+data class DeleteResponse(
+    val code: Boolean,
+    val msg: String,
+)
+
 data class UpdateTodoRequest(
     val todoId: String? = null,
     val updates: TodoUpdate? = null,
@@ -33,4 +38,8 @@ data class InsertTodoRequest(
     val status: Int,
     val priority: Int,
     val repeatType: Int
+)
+
+data class DeleteTodoRequest(
+    val todoId: String? = null,
 )

@@ -1,6 +1,7 @@
 package com.example.todoapplication.data.local
 
 import android.content.Context
+import com.example.todoapplication.data.api.model.DeleteResponse
 import com.example.todoapplication.data.model.Todo
 import com.example.todoapplication.data.model.TodoUpdate
 import org.json.JSONArray
@@ -106,7 +107,9 @@ object TodoStorage {
         return updateTodo(context, todoId, updateToMap(update))
     }
 
-
+    /**
+     * 新增本地文件
+     * */
     fun addTodo(
         context: Context,
         todo: Todo
@@ -145,6 +148,33 @@ object TodoStorage {
         file.writeText(json.toString())
 
         return true
+    }
+
+
+    /**
+     * 删除本地文件
+     * */
+    fun deleteTodo(
+        context: Context,
+        todoId: String
+    ): DeleteResponse {
+        val file = File(context.filesDir, FILE_NAME)
+        if (!file.exists()) return DeleteResponse(false, "文件不存在")
+
+        val json = JSONObject(file.readText())
+        val todosArray = json.optJSONArray("todos") ?: return DeleteResponse(false, "格式错误")
+
+        val newArray = JSONArray()
+        for (i in 0 until todosArray.length()) {
+            val item = todosArray.getJSONObject(i)
+            if (item.optString("_id") != todoId) {
+                newArray.put(item)
+            }
+        }
+
+        json.put("todos", newArray)
+        file.writeText(json.toString())
+        return DeleteResponse(true, "Success")
     }
 
 }
