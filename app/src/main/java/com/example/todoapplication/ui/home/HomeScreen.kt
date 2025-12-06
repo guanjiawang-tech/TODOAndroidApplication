@@ -55,6 +55,8 @@ fun HomeScreen() {
     var showDialog by remember { mutableStateOf(false) }
     // 维护选择的日期状态
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    // 升序/降序状态
+    var isAscending by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -71,7 +73,9 @@ fun HomeScreen() {
             SelectCalendar(
                 selectedDate = selectedDate,
                 onDateSelected = { date -> selectedDate = date },
-                onAddClick = { showDialog = true }
+                onAddClick = { showDialog = true },
+                isAscending = isAscending,
+                onAscendingChange = { checked -> isAscending = checked }
             )
         }
 
@@ -84,7 +88,7 @@ fun HomeScreen() {
                 .background(SkyBlue),
             contentAlignment = Alignment.Center
         ) {
-            TodoList(selectedDate = selectedDate)
+            TodoList(selectedDate = selectedDate, isAscending = isAscending)
         }
     }
 
@@ -135,14 +139,13 @@ fun SelectCalendar(
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
     onAddClick: () -> Unit,
+    isAscending: Boolean,                      // 从外部传入状态
+    onAscendingChange: (Boolean) -> Unit       // 回调修改状态
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
     // → 用户选择的条件
     var selectedFilter by remember { mutableStateOf<String?>(null) }
-
-    // → 升降序开关
-    var isAscending by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
@@ -212,7 +215,9 @@ fun SelectCalendar(
                         )
                         androidx.compose.material.Switch(
                             checked = isAscending,
-                            onCheckedChange = { isAscending = it }
+                            onCheckedChange = { checked ->
+                                onAscendingChange(checked)
+                            }
                         )
                     }
                 }
@@ -232,17 +237,19 @@ fun SelectCalendar(
  * To do List
  * */
 @Composable
-fun TodoList(selectedDate: LocalDate) {
+fun TodoList(selectedDate: LocalDate, isAscending: Boolean) {
     val scrollState = rememberScrollState()
 
 
     val context = LocalContext.current
     val fileContent = parseUserFile(context)
 
-    val sortedTodos = getDefaultSortedTodos(
+    var sortedTodos = getDefaultSortedTodos(
         fileContent?.todos ?: emptyList(),
         selectedDate
     )
+
+    sortedTodos = if (isAscending) sortedTodos else sortedTodos.reversed()
 
 //    //    测试数据
 //    val testTodos = listOf(
