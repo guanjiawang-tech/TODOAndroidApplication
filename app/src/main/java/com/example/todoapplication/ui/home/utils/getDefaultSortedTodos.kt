@@ -24,8 +24,8 @@ fun getDefaultSortedTodos(todos: List<TodoItem>, targetDate: LocalDate): List<To
             todo.repeatType == 1 || todo.deadline?.take(10) == targetDate.format(formatter)
         }
         .sortedWith(
-            compareByDescending<TodoItem> { it.priority } // 优先级高到低
-                .thenBy { it.status }                     // status 0 到 1
-                .thenBy { classifyOrder[it.classify] ?: 99 } // classify 排序
+            compareBy<TodoItem> { it.status }     // status 0 到 1
+                .thenByDescending { it.priority }             // 优先级高到低
+                .thenBy { classifyOrder[it.classify] ?: 99 }  // classify 排序
         )
 }

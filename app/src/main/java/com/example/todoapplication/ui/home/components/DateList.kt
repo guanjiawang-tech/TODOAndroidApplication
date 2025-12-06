@@ -20,10 +20,10 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun DateList(
-    onDateSelected: (LocalDate) -> Unit = {}
+    selectedDate: LocalDate,                // 外部传入选中日期
+    onDateChange: (LocalDate) -> Unit       // 点击日期回调
 ) {
 
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     var currentWeekStart by remember { mutableStateOf(getWeekStart(selectedDate)) }
 
     val weekDates = remember(currentWeekStart) {
@@ -49,8 +49,7 @@ fun DateList(
                     modifier = Modifier
                         .width(60.dp)                // 元素宽度固定(不会超屏)
                         .clickable {
-                            selectedDate = date
-                            onDateSelected(date)
+                            onDateChange(date)
                         },
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

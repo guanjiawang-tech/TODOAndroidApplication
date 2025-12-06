@@ -52,6 +52,8 @@ fun HomeScreen() {
     val scope = rememberCoroutineScope()
 
     var showDialog by remember { mutableStateOf(false) }
+    // 维护选择的日期状态
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -66,7 +68,9 @@ fun HomeScreen() {
             contentAlignment = Alignment.Center
         ) {
             SelectCalendar(
-                onAddClick = { showDialog = true },
+                selectedDate = selectedDate,
+                onDateSelected = { date -> selectedDate = date },
+                onAddClick = { showDialog = true }
             )
         }
 
@@ -79,7 +83,7 @@ fun HomeScreen() {
                 .background(SkyBlue),
             contentAlignment = Alignment.Center
         ) {
-            TodoList()
+            TodoList(selectedDate = selectedDate)
         }
     }
 
@@ -127,6 +131,8 @@ fun HomeScreen() {
  * */
 @Composable
 fun SelectCalendar(
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
     onAddClick: () -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -209,7 +215,12 @@ fun SelectCalendar(
                         )
                     }
                 }
-                DateList()
+                DateList(
+                    selectedDate = selectedDate,
+                    onDateChange = { date ->
+                        onDateSelected(date) // 调用外部传入的回调
+                    }
+                )
             }
         }
     }
@@ -220,12 +231,17 @@ fun SelectCalendar(
  * To do List
  * */
 @Composable
-fun TodoList() {
+fun TodoList(selectedDate: LocalDate) {
     val scrollState = rememberScrollState()
 
 
     val context = LocalContext.current
     val fileContent = parseUserFile(context)
+
+    val sortedTodos = getDefaultSortedTodos(
+        fileContent?.todos ?: emptyList(),
+        selectedDate
+    )
 
 //    //    测试数据
 //    val testTodos = listOf(
@@ -278,12 +294,12 @@ fun TodoList() {
 //            classify = "生活"
 //        )
 //    )
-    val today = LocalDate.now()
+//    val today = LocalDate.now()
 
-    val sortedTodos = getDefaultSortedTodos(
-        fileContent?.todos ?: emptyList(),
-        today
-    )
+//    val sortedTodos = getDefaultSortedTodos(
+//        fileContent?.todos ?: emptyList(),
+//        today
+//    )
 
     Column(
         modifier = Modifier
