@@ -229,7 +229,7 @@ fun Todo(
                     1 -> listOf(TealSoft.copy(alpha = 0.5f), Color.Transparent)
                     else -> listOf(Color(0xFFE0F7FA), Color.Transparent)
                 }
-                val gradientWidthPx = calculateGradientWidth(todo.deadline)
+                val gradientWidthPx = calculateGradientWidth(todo.deadline, todo.repeatType)
                 gradientWidthPx
                 // Card 内容
                 Row(

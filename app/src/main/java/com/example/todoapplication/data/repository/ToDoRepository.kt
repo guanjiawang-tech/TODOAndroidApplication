@@ -9,6 +9,7 @@ import com.example.todoapplication.data.api.model.TodoResponse
 import com.example.todoapplication.data.api.model.TodoResponseByOne
 import com.example.todoapplication.data.api.model.UpdateTodoRequest
 import com.example.todoapplication.data.model.TodoUpdate
+import java.time.LocalDate
 
 class ToDoRepository {
 
@@ -43,12 +44,14 @@ class ToDoRepository {
         todo: InsertTodoRequest
     ): TodoResponseByOne? {
         return try {
+            val safeDeadline = todo.deadline?.takeIf { it != "null" } ?: LocalDate.now().toString()
+
             Client.apiService.insertTodo(
                 InsertTodoRequest(
                     todo.userId,
                     todo.title,
                     todo.content,
-                    todo.deadline,
+                    safeDeadline,
                     todo.status,
                     todo.priority,
                     todo.repeatType,

@@ -11,6 +11,7 @@ import java.time.OffsetDateTime
 @Composable
 fun calculateGradientWidth(
     deadline: String?,
+    repeatType: Int?,
     defaultDp: Dp = 60.dp,
     urgentDp: Dp = 240.dp
 ): Float {
@@ -25,7 +26,10 @@ fun calculateGradientWidth(
                 val twoDaysBefore = deadlineDate.minusDays(2)
 
                 // 判断今天是否在截止日期前两天到截止日期之间
-                if (!today.isBefore(twoDaysBefore) && !today.isAfter(deadlineDate)) {
+                if (!today.isBefore(twoDaysBefore)
+                    && !today.isAfter(deadlineDate)
+                    && (repeatType !== 1)
+                    ) {
                     dp = urgentDp
                 }
             } catch (_: Exception) { }
