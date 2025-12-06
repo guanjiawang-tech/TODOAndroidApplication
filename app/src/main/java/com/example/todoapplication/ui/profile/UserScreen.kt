@@ -7,7 +7,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -18,16 +22,20 @@ import com.example.todoapplication.data.model.StripConfig
 import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.ui.components.Lines
 import com.example.todoapplication.ui.profile.components.HeadCard
+import com.example.todoapplication.ui.profile.components.LogoutDialog
 import com.example.todoapplication.ui.profile.components.MenuList
 import com.example.todoapplication.ui.theme.SkyBlue
 import kotlinx.coroutines.launch
 
 @Composable
-fun UserScreen() {
+fun UserScreen(
+    onLogout: () -> Unit
+) {
 
     val context = LocalContext.current
     val fileContent = parseUserFile(context)
 
+    var showLogoutDialog by remember { mutableStateOf(false) }
 //    val scope = rememberCoroutineScope()
 
     val menuItems = listOf(
@@ -48,6 +56,7 @@ fun UserScreen() {
             StripConfig(isShow = true, stripHeight = 16, stripColor = Color.Blue),
             true,
             onClick = {
+                showLogoutDialog = true
 //                scope.launch {
 //                    val repo = ToDoRepository()
 //                    val todoList = repo.GetTodoList("674146ce439a8591c4a5841a")
@@ -74,39 +83,21 @@ fun UserScreen() {
             )
             Lines()
         }
-//        Button(
-//            onClick = {
-//                UserStorage.clearUser(context)
-//            },
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(top = 20.dp),
-//            shape = RoundedCornerShape(6.dp),
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = DarkBlue,
-//                contentColor = Color.White
-//            )
-//        ) {
-//            Text("清除缓存", fontSize = MaterialTheme.typography.titleMedium.fontSize)
-//        }
-//
-//        val fileContent = parseUserFile(context)
-//        Button(
-//            onClick = {
-//                println("data.json 内容: $fileContent")
-//            },
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(top = 20.dp),
-//            shape = RoundedCornerShape(6.dp),
-//            colors = ButtonDefaults.buttonColors(
-//                containerColor = DarkBlue,
-//                contentColor = Color.White
-//            )
-//        ) {
-//            Text("读取文件", fontSize = MaterialTheme.typography.titleMedium.fontSize)
-//        }
 
+        // 显示退出确认弹窗
+        if (showLogoutDialog) {
+            LogoutDialog(
+                onConfirm = {
+                    UserStorage.clearUser(context)
+                    showLogoutDialog = false
+                    onLogout() // 通知 MainActivity 更新状态
+                    showLogoutDialog = false
+                },
+                onDismiss = {
+                    showLogoutDialog = false
+                }
+            )
+        }
 
     }
 }

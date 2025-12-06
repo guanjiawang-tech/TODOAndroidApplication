@@ -77,7 +77,7 @@ class MainActivity : ComponentActivity() {
                         }
                     )
                 } else {
-                    AppLayout()  // Login Success
+                    AppLayout(onLogout = { user = null })  // Login Success
 
                     scope.launch {
                         val repo = ToDoRepository()
@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppLayout() {
+fun AppLayout(onLogout: () -> Unit) {
 
     /**
      * Page Status
@@ -124,7 +124,7 @@ fun AppLayout() {
 
             when(selectedTab){
                 0 -> HomeScreen()
-                1 -> UserScreen()
+                1 -> UserScreen(onLogout)
             }
         }
     }
@@ -175,10 +175,10 @@ fun BottomMenu(selectedTabBar : Int, onTabSelected: (Int) -> Unit) {
 }
 
 // To Preview
-@Preview(showBackground = true)
-@Composable
-fun PreviewAppLayout() {
-    TODOApplicationTheme {
-        AppLayout()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PreviewAppLayout() {
+//    TODOApplicationTheme {
+//        AppLayout()
+//    }
+//}
