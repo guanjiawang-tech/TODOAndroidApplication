@@ -56,7 +56,9 @@ fun HomeScreen() {
     // 维护选择的日期状态
     var selectedDate by remember { mutableStateOf(LocalDate.now()) }
     // 升序/降序状态
-    var isAscending by remember { mutableStateOf(true) }
+    var isAscending by remember { mutableStateOf(false) }
+    // 查询条件状态
+    var selectedFilter by remember { mutableStateOf("默认") }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -72,10 +74,12 @@ fun HomeScreen() {
         ) {
             SelectCalendar(
                 selectedDate = selectedDate,
-                onDateSelected = { date -> selectedDate = date },
+                onDateSelected = { selectedDate = it },
                 onAddClick = { showDialog = true },
                 isAscending = isAscending,
-                onAscendingChange = { checked -> isAscending = checked }
+                onAscendingChange = { isAscending = it },
+                selectedFilter = selectedFilter,
+                onFilterChange = { selectedFilter = it }
             )
         }
 
@@ -88,7 +92,12 @@ fun HomeScreen() {
                 .background(SkyBlue),
             contentAlignment = Alignment.Center
         ) {
-            TodoList(selectedDate = selectedDate, isAscending = isAscending)
+            TodoList(
+                todos = fileContent?.todos ?: emptyList(),
+                selectedDate = selectedDate,
+                selectedFilter = selectedFilter,
+                isAscending = isAscending
+            )
         }
     }
 
@@ -140,7 +149,9 @@ fun SelectCalendar(
     onDateSelected: (LocalDate) -> Unit,
     onAddClick: () -> Unit,
     isAscending: Boolean,                      // 从外部传入状态
-    onAscendingChange: (Boolean) -> Unit       // 回调修改状态
+    onAscendingChange: (Boolean) -> Unit,      // 回调修改状态
+    selectedFilter: String,
+    onFilterChange: (String) -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -174,8 +185,9 @@ fun SelectCalendar(
                 onDismiss = { menuExpanded = false },
                 options = listOf("默认", "状态", "优先级", "类型")
             ) { selected ->
-                selectedFilter = selected
+                onFilterChange(selected)
                 menuExpanded = false
+
             }
 
             Icon(
@@ -199,7 +211,7 @@ fun SelectCalendar(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                        .padding(horizontal = 16.dp, vertical = 2.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -223,9 +235,7 @@ fun SelectCalendar(
                 }
                 DateList(
                     selectedDate = selectedDate,
-                    onDateChange = { date ->
-                        onDateSelected(date) // 调用外部传入的回调
-                    }
+                    onDateChange = onDateSelected
                 )
             }
         }
@@ -237,7 +247,12 @@ fun SelectCalendar(
  * To do List
  * */
 @Composable
-fun TodoList(selectedDate: LocalDate, isAscending: Boolean) {
+fun TodoList(
+    todos: List<TodoItem>,
+    selectedDate: LocalDate,
+    selectedFilter: String,
+    isAscending: Boolean
+) {
     val scrollState = rememberScrollState()
 
 
@@ -245,11 +260,13 @@ fun TodoList(selectedDate: LocalDate, isAscending: Boolean) {
     val fileContent = parseUserFile(context)
 
     var sortedTodos = getDefaultSortedTodos(
-        fileContent?.todos ?: emptyList(),
-        selectedDate
+        todos,
+        selectedDate,
+        selectedFilter,
+        isAscending
     )
 
-    sortedTodos = if (isAscending) sortedTodos else sortedTodos.reversed()
+//    sortedTodos = if (isAscending) sortedTodos else sortedTodos.reversed()
 
 //    //    测试数据
 //    val testTodos = listOf(
