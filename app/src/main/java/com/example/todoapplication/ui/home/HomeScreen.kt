@@ -88,9 +88,9 @@ fun HomeScreen() {
             deadlineDefault = null,
             priorityDefault = 1,
             repeatTypeDefault = false,
-            isEditMode = false,
+            categoryDefault = "生活",
             onDismiss = { showDialog = false },
-            onConfirm = { title, content, deadline, priority, repeatType ->
+            onConfirm = { title, content, deadline, priority, repeatType, category ->
                 showDialog = false
 
                 // 构造 InsertTodoRequest
@@ -101,7 +101,8 @@ fun HomeScreen() {
                     deadline = deadline,
                     status = 0,
                     priority = priority,
-                    repeatType = if (repeatType) 1 else 0
+                    repeatType = if (repeatType) 1 else 0,
+                    classify = category
                 )
 
 

@@ -9,7 +9,9 @@ data class Todo(
     val deadline: String?,
     val status: Int,
     val priority: Int,
-    val repeatType: Int
+    val repeatType: Int,
+    val classify: String,
+
 )
 
 data class TodoUpdate(
@@ -18,5 +20,6 @@ data class TodoUpdate(
     val deadline: String? = null,
     val status: Int? = null,
     val priority: Int? = null,
-    val repeatType: Int? = null
+    val repeatType: Int? = null,
+    val classify: String? = null,
 )

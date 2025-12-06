@@ -29,15 +29,26 @@ fun EditTodoDialog(
     deadlineDefault: String?,
     priorityDefault: Int,
     repeatTypeDefault: Boolean,
-    isEditMode: Boolean = false,
+    categoryDefault: String = "生活",
     onDismiss: () -> Unit,
-    onConfirm: (title: String, content: String, deadline: String?, priority: Int, repeatType: Boolean) -> Unit
+    onConfirm: (
+        title: String,
+        content: String,
+        deadline: String?,
+        priority: Int,
+        repeatType: Boolean,
+        category: String
+            ) -> Unit
 ) {
     val titleState = remember { mutableStateOf(titleDefault) }
     val contentState = remember { mutableStateOf(contentDefault) }
     val priorityState = remember { mutableStateOf(priorityDefault) }
     val repeatTypeState = remember { mutableStateOf(repeatTypeDefault) }
     val deadlineState = remember { mutableStateOf(deadlineDefault ?: "") }
+
+    //  分类状态
+    val categoryOptions = listOf("生活", "工作", "学习")
+    val categoryState = remember { mutableStateOf(categoryDefault) }
 
     // 日期选择器
     val context = LocalContext.current
@@ -93,7 +104,10 @@ fun EditTodoDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = if (deadlineState.value.isEmpty()) "未设置截止日期" else "截止日期: ${deadlineState.value.substring(0,10)}",
+                        text = if (deadlineState.value.isNullOrBlank() || deadlineState.value == "null")
+                            "未设置截止日期"
+                        else
+                            "截止日期: ${deadlineState.value.take(10)}",
                         color = if (repeatTypeState.value) Color.Gray else Color.Black
                     )
                     TextButton(
@@ -130,6 +144,24 @@ fun EditTodoDialog(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                Text("分类:", modifier = Modifier.padding(bottom = 6.dp))
+                Row {
+                    categoryOptions.forEach { option ->
+                        Button(
+                            onClick = { categoryState.value = option },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (categoryState.value == option) BlueNormal else Color.LightGray
+                            ),
+                            modifier = Modifier.padding(end = 4.dp)
+                        ) {
+                            Text(option, color = Color.White)
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(12.dp))
+
+
                 // Repeat Type
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("重复: ", modifier = Modifier.padding(end = 8.dp))
@@ -149,7 +181,8 @@ fun EditTodoDialog(
                         contentState.value,
                         if (deadlineState.value.isEmpty()) null else deadlineState.value,
                         priorityState.value,
-                        repeatTypeState.value
+                        repeatTypeState.value,
+                        categoryState.value
                     )
                 }
             ) {

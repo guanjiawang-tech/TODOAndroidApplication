@@ -52,6 +52,7 @@ class ToDoRepository {
                     todo.status,
                     todo.priority,
                     todo.repeatType,
+                    todo.classify
                 )
             )
         } catch (e: Exception) {

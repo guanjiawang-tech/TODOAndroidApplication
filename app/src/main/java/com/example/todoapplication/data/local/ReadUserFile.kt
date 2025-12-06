@@ -44,7 +44,8 @@ fun parseUserFile(context: Context): UserData? {
                         deadline = todoJson.optString("deadline"),
                         status = todoJson.optInt("status"),
                         priority = todoJson.optInt("priority"),
-                        repeatType = todoJson.optInt("repeatType")
+                        repeatType = todoJson.optInt("repeatType"),
+                        classify = todoJson.optString("classify")
                     )
 
                     todosList.add(todo)

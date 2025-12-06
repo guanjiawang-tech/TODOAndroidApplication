@@ -37,7 +37,8 @@ data class InsertTodoRequest(
     val deadline: String?,
     val status: Int,
     val priority: Int,
-    val repeatType: Int
+    val repeatType: Int,
+    val classify: String,
 )
 
 data class DeleteTodoRequest(

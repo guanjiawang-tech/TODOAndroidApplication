@@ -87,9 +87,9 @@ fun Todo(
             deadlineDefault = data?.deadline,
             priorityDefault = data?.priority ?: 1,
             repeatTypeDefault = data?.repeatType == 1,
-            isEditMode = true,
+            categoryDefault = data?.classify ?: "生活",
             onDismiss = { showDialog.value = false },
-            onConfirm = { newTitle, newContent, newDeadline, newPriority, newRepeat ->
+            onConfirm = { newTitle, newContent, newDeadline, newPriority, newRepeat, category ->
                 showDialog.value = false
                 // 更新本地数据
                 val updatedTodo = TodoUpdate(
@@ -97,7 +97,8 @@ fun Todo(
                     content = newContent,
                     deadline = newDeadline,
                     priority = newPriority,
-                    repeatType = if (newRepeat) 1 else 0
+                    repeatType = if (newRepeat) 1 else 0,
+                    classify = category
                 )
                 TodoStorage.updateTodo(context, todoId = data?._id ?: "", update = updatedTodo)
                 //  数据库更新  status
@@ -110,7 +111,9 @@ fun Todo(
                                 content = newContent,
                                 deadline = newDeadline,
                                 priority = newPriority,
-                                repeatType = if (newRepeat) 1 else 0
+                                repeatType = if (newRepeat) 1 else 0,
+                                classify = category
+
                             )
                         )
                         if (todoResponse?.code == true) {

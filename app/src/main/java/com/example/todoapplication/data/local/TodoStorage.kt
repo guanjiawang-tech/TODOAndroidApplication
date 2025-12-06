@@ -34,6 +34,7 @@ object TodoStorage {
                     put("status", todo.status)
                     put("priority", todo.priority)
                     put("repeatType", todo.repeatType)
+                    put("classify", todo.classify)
                 }
                 put(todoJson)
             }
@@ -57,7 +58,8 @@ object TodoStorage {
             "deadline" to update.deadline,
             "status" to update.status,
             "priority" to update.priority,
-            "repeatType" to update.repeatType
+            "repeatType" to update.repeatType,
+            "classify" to update.classify
         ).filterValues { it != null }
     }
 
@@ -136,6 +138,7 @@ object TodoStorage {
             put("status", todo.status)
             put("priority", todo.priority)
             put("repeatType", todo.repeatType)
+            put("classify", todo.classify)
         }
 
         // 追加到数组
