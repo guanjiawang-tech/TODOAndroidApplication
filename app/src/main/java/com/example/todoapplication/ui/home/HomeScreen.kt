@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -21,17 +20,34 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.todoapplication.data.api.model.InsertTodoRequest
+import com.example.todoapplication.data.local.TodoStorage
 import com.example.todoapplication.data.local.parseUserFile
+import com.example.todoapplication.data.repository.ToDoRepository
+import com.example.todoapplication.ui.home.components.EditTodoDialog
 import com.example.todoapplication.ui.home.components.Todo
 import com.example.todoapplication.ui.theme.BlueNormal
 import com.example.todoapplication.ui.theme.SkyBlue
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen() {
+
+    val context = LocalContext.current
+    val fileContent = parseUserFile(context)
+    val scope = rememberCoroutineScope()
+
+    var showDialog by remember { mutableStateOf(false) }
+    val repo = ToDoRepository()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -45,7 +61,10 @@ fun HomeScreen() {
                 .background(BlueNormal),
             contentAlignment = Alignment.Center
         ) {
-            SelectCalendar()
+            SelectCalendar(
+                onAddClick = { showDialog = true },
+                onMenuClick = { /* TODO: 菜单逻辑 */ }
+            )
         }
 
         // Main Part
@@ -60,13 +79,53 @@ fun HomeScreen() {
             TodoList()
         }
     }
+
+    // 添加 To do 弹窗
+    if (showDialog) {
+        EditTodoDialog(
+            titleDefault = "",
+            contentDefault = "",
+            deadlineDefault = null,
+            priorityDefault = 1,
+            repeatTypeDefault = false,
+            isEditMode = false,
+            onDismiss = { showDialog = false },
+            onConfirm = { title, content, deadline, priority, repeatType ->
+                showDialog = false
+
+                // 构造 InsertTodoRequest
+                val todoRequest = InsertTodoRequest(
+                    userId = fileContent?.id ?: "",
+                    title = title,
+                    content = content,
+                    deadline = deadline,
+                    status = 0,
+                    priority = priority,
+                    repeatType = if (repeatType) 1 else 0
+                )
+
+
+                val repo = ToDoRepository()
+                // 调用后端插入
+                scope.launch {
+                    val response = repo.insertTodo(todoRequest)
+                    if (response?.code == true && response.data != null) {
+                        TodoStorage.addTodo(context, response.data)
+                    }
+                }
+            }
+        )
+    }
 }
 
 /**
  * Show Select Calendar
  * */
 @Composable
-fun SelectCalendar() {
+fun SelectCalendar(
+    onAddClick: () -> Unit,
+    onMenuClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -90,7 +149,9 @@ fun SelectCalendar() {
             Icon(
                 imageVector = Icons.Filled.Add,
                 contentDescription = "添加",
-                modifier = Modifier.clickable { onAddClick() }
+                modifier = Modifier.clickable {
+                    onAddClick()
+                }
             )
         }
 
@@ -107,13 +168,6 @@ fun SelectCalendar() {
     }
 }
 
-private fun RowScope.onAddClick() {
-    TODO("Not yet implemented")
-}
-
-private fun RowScope.onMenuClick() {
-    TODO("Not yet implemented")
-}
 
 /**
  * To do List
@@ -131,13 +185,16 @@ fun TodoList() {
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        repeat(fileContent?.todos?.size ?: 0) { index ->
-            Todo(
-                data = fileContent?.todos[index],
-//                title = fileContent?.todos[index]?.title ?: "title",
-//                Checked = fileContent?.todos[index]?.status != 0
-            )
+        fileContent?.todos?.forEach { todo ->
+            Todo(data = todo)
         }
+//        repeat(fileContent?.todos?.size ?: 0) { index ->
+//            Todo(
+//                data = fileContent?.todos[index],
+////                title = fileContent?.todos[index]?.title ?: "title",
+////                Checked = fileContent?.todos[index]?.status != 0
+//            )
+//        }
     }
 
 }

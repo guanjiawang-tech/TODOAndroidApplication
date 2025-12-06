@@ -29,6 +29,7 @@ fun EditTodoDialog(
     deadlineDefault: String?,
     priorityDefault: Int,
     repeatTypeDefault: Boolean,
+    isEditMode: Boolean = false,
     onDismiss: () -> Unit,
     onConfirm: (title: String, content: String, deadline: String?, priority: Int, repeatType: Boolean) -> Unit
 ) {

@@ -82,6 +82,7 @@ fun Todo(
             deadlineDefault = data?.deadline,
             priorityDefault = data?.priority ?: 1,
             repeatTypeDefault = data?.repeatType == 1,
+            isEditMode = true,
             onDismiss = { showDialog.value = false },
             onConfirm = { newTitle, newContent, newDeadline, newPriority, newRepeat ->
                 showDialog.value = false

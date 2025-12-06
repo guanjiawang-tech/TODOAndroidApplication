@@ -4,6 +4,7 @@ import com.example.todoapplication.data.api.Client
 import com.example.todoapplication.data.api.model.InsertTodoRequest
 import com.example.todoapplication.data.api.model.TodoRequest
 import com.example.todoapplication.data.api.model.TodoResponse
+import com.example.todoapplication.data.api.model.TodoResponseByOne
 import com.example.todoapplication.data.api.model.UpdateTodoRequest
 import com.example.todoapplication.data.model.TodoUpdate
 
@@ -38,7 +39,7 @@ class ToDoRepository {
      */
     suspend fun insertTodo(
         todo: InsertTodoRequest
-    ): TodoResponse? {
+    ): TodoResponseByOne? {
         return try {
             Client.apiService.insertTodo(
                 InsertTodoRequest(

@@ -14,6 +14,12 @@ data class TodoResponse(
     val data: List<Todo>? = null
 )
 
+data class TodoResponseByOne(
+    val code: Boolean,
+    val msg: String,
+    val data: Todo? = null
+)
+
 data class UpdateTodoRequest(
     val todoId: String? = null,
     val updates: TodoUpdate? = null,

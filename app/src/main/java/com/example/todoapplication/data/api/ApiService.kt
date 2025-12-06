@@ -5,6 +5,7 @@ import com.example.todoapplication.data.api.model.LoginRequest
 import com.example.todoapplication.data.api.model.LoginResponse
 import com.example.todoapplication.data.api.model.TodoRequest
 import com.example.todoapplication.data.api.model.TodoResponse
+import com.example.todoapplication.data.api.model.TodoResponseByOne
 import com.example.todoapplication.data.api.model.UpdateTodoRequest
 import com.example.todoapplication.data.model.TodoUpdate
 import retrofit2.http.Body
@@ -38,9 +39,9 @@ interface ApiService {
     /**
      * 插入用户 To do 列表
      */
-    @PATCH("/api/insertTodo")
+    @POST("/api/insertTodo")
     suspend fun insertTodo(
         @Body request: InsertTodoRequest
-    ): TodoResponse
+    ): TodoResponseByOne
 
 }

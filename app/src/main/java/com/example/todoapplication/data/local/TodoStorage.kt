@@ -106,4 +106,45 @@ object TodoStorage {
         return updateTodo(context, todoId, updateToMap(update))
     }
 
+
+    fun addTodo(
+        context: Context,
+        todo: Todo
+    ): Boolean {
+        val file = File(context.filesDir, FILE_NAME)
+
+        // 若文件不存在则不写（保持你的安全策略）
+        if (!file.exists()) return false
+
+        // 读取现有 JSON
+        val json = JSONObject(file.readText())
+
+        // 获取已有 todos 数组，如不存在则创建
+        val todosArray = json.optJSONArray("todos") ?: JSONArray()
+
+        // 转成 JSON 对象
+        val todoJson = JSONObject().apply {
+            put("_id", todo._id)
+            put("userId", todo.userId)
+            put("title", todo.title)
+            put("content", todo.content)
+            put("createdAt", todo.createdAt)
+            put("deadline", todo.deadline ?: JSONObject.NULL)
+            put("status", todo.status)
+            put("priority", todo.priority)
+            put("repeatType", todo.repeatType)
+        }
+
+        // 追加到数组
+        todosArray.put(todoJson)
+
+        // 更新 JSON 根结构
+        json.put("todos", todosArray)
+
+        // 写回文件
+        file.writeText(json.toString())
+
+        return true
+    }
+
 }
