@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -321,7 +322,9 @@ fun TodoList(selectedDate: LocalDate) {
             }
         } else {
             sortedTodos.forEach { todo ->
-                Todo(data = todo)
+                key(todo._id) {
+                    Todo(data = todo)
+                }
             }
         }
     }

@@ -219,47 +219,36 @@ fun Todo(
             ) {
                 Checkbox(
                     checked = todo.status == 1,
-                    onCheckedChange = {
-                        //  本地更新  status
-                        val newStatus = if (todo.status == 1) 0 else 1
+                    onCheckedChange = {checked ->
+                        val newStatus = if (checked) 1 else 0
+
+                        // 更新本地存储
                         TodoStorage.updateTodo(
                             context,
-                            todoId = data?._id ?: "",
-                            update = TodoUpdate(
-                                status = newStatus
-                            )
+                            todoId = todo._id,
+                            update = TodoUpdate(status = newStatus)
                         )
-                        //  数据库更新  status
+
+                        // 更新 todo 对象（立即更新 UI）
                         todo = todo.copy(status = newStatus)
-                        val repo = ToDoRepository()
+
+                        // 后端更新
                         scope.launch {
                             try {
-                                val todoResponse = repo.updateTodo(
-                                    todoId = data?._id ?: "",
-                                    updates = TodoUpdate(
-                                        status = newStatus
-                                    )
-                                )
-                                if (todoResponse?.code == true) {
-                                    println("后端更新成功")
-                                } else {
-                                    println("后端更新失败")
-                                }
+                                repo.updateTodo(todoId = todo._id, updates = TodoUpdate(status = newStatus))
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
                         }
 
-                        //  更新 UI 状态
-                        isChecked.value = it
                     }
                 )
                 Text(
-                    text = data?.title ?: "Title",
+                    text = todo.title,
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 12.dp),
-                    color = if (isChecked.value) Color.Gray else Color.Black,
-                    textDecoration = if (isChecked.value) TextDecoration.LineThrough else TextDecoration.None
+                    color = if (todo.status == 1) Color.Gray else Color.Black,
+                    textDecoration = if (todo.status == 1) TextDecoration.LineThrough else TextDecoration.None
                 )
             }
         }
