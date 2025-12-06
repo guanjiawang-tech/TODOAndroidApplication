@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Checkbox
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -48,6 +51,7 @@ import com.example.todoapplication.data.model.TodoItem
 import com.example.todoapplication.data.model.TodoUpdate
 import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.ui.theme.CoralRed
+import com.example.todoapplication.ui.theme.DarkBlue
 import com.example.todoapplication.ui.theme.Gray500
 import com.example.todoapplication.ui.theme.TealSoft
 import kotlinx.coroutines.launch
@@ -157,7 +161,7 @@ fun Todo(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .clickable( onClick = {
+            .clickable(onClick = {
                 showDialog.value = true
             }),
     ) {
@@ -217,39 +221,49 @@ fun Todo(
                     )
                     .background(Color.White)
             ) {
-                Checkbox(
-                    checked = todo.status == 1,
-                    onCheckedChange = {checked ->
-                        val newStatus = if (checked) 1 else 0
+                val gradientColors = when (todo.priority) {
+                    3 -> listOf(CoralRed.copy(alpha = 0.5f), Color.Transparent)
+                    2 -> listOf(DarkBlue.copy(alpha = 0.5f), Color.Transparent)
+                    1 -> listOf(TealSoft.copy(alpha = 0.5f), Color.Transparent)
+                    else -> listOf(Color(0xFFE0F7FA), Color.Transparent)
+                }
+                val gradientWidthPx = with(LocalDensity.current) { 60.dp.toPx() }
 
-                        // 更新本地存储
-                        TodoStorage.updateTodo(
-                            context,
-                            todoId = todo._id,
-                            update = TodoUpdate(status = newStatus)
+                // Card 内容
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            Brush.horizontalGradient(
+                                colors = gradientColors,
+                                startX = 0f,
+                                endX = gradientWidthPx
+                            )
                         )
-
-                        // 更新 todo 对象（立即更新 UI）
-                        todo = todo.copy(status = newStatus)
-
-                        // 后端更新
-                        scope.launch {
-                            try {
-                                repo.updateTodo(todoId = todo._id, updates = TodoUpdate(status = newStatus))
-                            } catch (e: Exception) {
-                                e.printStackTrace()
+                ) {
+                    Checkbox(
+                        checked = todo.status == 1,
+                        onCheckedChange = { checked ->
+                            val newStatus = if (checked) 1 else 0
+                            TodoStorage.updateTodo(context, todoId = todo._id, update = TodoUpdate(status = newStatus))
+                            todo = todo.copy(status = newStatus)
+                            scope.launch {
+                                try {
+                                    repo.updateTodo(todoId = todo._id, updates = TodoUpdate(status = newStatus))
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
                             }
                         }
-
-                    }
-                )
-                Text(
-                    text = todo.title,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp, vertical = 12.dp),
-                    color = if (todo.status == 1) Color.Gray else Color.Black,
-                    textDecoration = if (todo.status == 1) TextDecoration.LineThrough else TextDecoration.None
-                )
+                    )
+                    Text(
+                        text = todo.title,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                        color = if (todo.status == 1) Color.Gray else Color.Black,
+                        textDecoration = if (todo.status == 1) TextDecoration.LineThrough else TextDecoration.None
+                    )
+                }
             }
         }
     }

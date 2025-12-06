@@ -19,13 +19,23 @@ fun getDefaultSortedTodos(todos: List<TodoItem>, targetDate: LocalDate): List<To
 
     val classifyOrder = mapOf("工作" to 1, "生活" to 2, "学习" to 3)
 
-    return todos
-        .filter { todo ->
-            todo.repeatType == 1 || todo.deadline?.take(10) == targetDate.format(formatter)
+    return todos.filter { todo ->
+        if (todo.repeatType == 1) {
+            true // 重复任务总是显示
+        } else {
+            val deadline = todo.deadline?.take(10)?.takeIf { it.isNotBlank() }?.let {
+                LocalDate.parse(it, formatter)
+            }
+
+            when {
+                todo.status == 0 -> deadline != null && !deadline.isBefore(targetDate) // 未完成，今天及以前
+                todo.status == 1 -> deadline != null && deadline == targetDate // 已完成，只显示今天
+                else -> false
+            }
         }
-        .sortedWith(
-            compareBy<TodoItem> { it.status }     // status 0 到 1
-                .thenByDescending { it.priority }             // 优先级高到低
-                .thenBy { classifyOrder[it.classify] ?: 99 }  // classify 排序
-        )
+    }.sortedWith(
+        compareBy<TodoItem> { it.status }                // status升序
+            .thenByDescending { it.priority }           // 优先级降序
+            .thenBy { classifyOrder[it.classify] ?: 99 } // classify排序
+    )
 }
