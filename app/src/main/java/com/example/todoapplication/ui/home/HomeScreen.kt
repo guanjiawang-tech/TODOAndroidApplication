@@ -33,6 +33,8 @@ import com.example.todoapplication.data.api.model.InsertTodoRequest
 import com.example.todoapplication.data.local.TodoStorage
 import com.example.todoapplication.data.local.parseUserFile
 import com.example.todoapplication.data.repository.ToDoRepository
+import com.example.todoapplication.ui.home.components.AppDropdownMenu
+import com.example.todoapplication.ui.home.components.DateList
 import com.example.todoapplication.ui.home.components.EditTodoDialog
 import com.example.todoapplication.ui.home.components.Todo
 import com.example.todoapplication.ui.theme.BlueNormal
@@ -47,7 +49,6 @@ fun HomeScreen() {
     val scope = rememberCoroutineScope()
 
     var showDialog by remember { mutableStateOf(false) }
-    val repo = ToDoRepository()
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -57,13 +58,12 @@ fun HomeScreen() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(2f)
+                .weight(3f)
                 .background(BlueNormal),
             contentAlignment = Alignment.Center
         ) {
             SelectCalendar(
                 onAddClick = { showDialog = true },
-                onMenuClick = { /* TODO: 菜单逻辑 */ }
             )
         }
 
@@ -72,7 +72,7 @@ fun HomeScreen() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(5f)
+                .weight(7f)
                 .background(SkyBlue),
             contentAlignment = Alignment.Center
         ) {
@@ -125,8 +125,15 @@ fun HomeScreen() {
 @Composable
 fun SelectCalendar(
     onAddClick: () -> Unit,
-    onMenuClick: () -> Unit
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
+    // → 用户选择的条件
+    var selectedFilter by remember { mutableStateOf<String?>(null) }
+
+    // → 升降序开关
+    var isAscending by remember { mutableStateOf(true) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -144,8 +151,19 @@ fun SelectCalendar(
             Icon(
                 imageVector = Icons.Filled.Menu,
                 contentDescription = "菜单",
-                modifier = Modifier.clickable { onMenuClick() }
+                modifier = Modifier.clickable {
+                    menuExpanded = true
+                }
             )
+
+            AppDropdownMenu(
+                expanded = menuExpanded,
+                onDismiss = { menuExpanded = false },
+                options = listOf("默认", "状态", "优先级", "类型")
+            ) { selected ->
+                selectedFilter = selected
+                menuExpanded = false
+            }
 
             Icon(
                 imageVector = Icons.Filled.Add,
@@ -164,7 +182,32 @@ fun SelectCalendar(
             contentAlignment = Alignment.Center
         ) {
             // TODO: Data
-            Text("Data Sessions")
+            Column() {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "查询条件：${selectedFilter ?: "默认"}",
+                        color = androidx.compose.ui.graphics.Color.White
+                    )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = if (isAscending) "升序" else "降序",
+                            color = androidx.compose.ui.graphics.Color.White
+                        )
+                        androidx.compose.material.Switch(
+                            checked = isAscending,
+                            onCheckedChange = { isAscending = it }
+                        )
+                    }
+                }
+                DateList()
+            }
         }
     }
 }
@@ -189,13 +232,6 @@ fun TodoList() {
         fileContent?.todos?.forEach { todo ->
             Todo(data = todo)
         }
-//        repeat(fileContent?.todos?.size ?: 0) { index ->
-//            Todo(
-//                data = fileContent?.todos[index],
-////                title = fileContent?.todos[index]?.title ?: "title",
-////                Checked = fileContent?.todos[index]?.status != 0
-//            )
-//        }
     }
 
 }

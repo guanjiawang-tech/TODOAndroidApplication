@@ -145,12 +145,15 @@ fun EditTodoDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text("分类:", modifier = Modifier.padding(bottom = 6.dp))
-                Row {
+                Row (
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ){
                     categoryOptions.forEach { option ->
                         Button(
                             onClick = { categoryState.value = option },
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (categoryState.value == option) BlueNormal else Color.LightGray
+                                containerColor = if (categoryState.value == option) DarkBlue else Color.LightGray
                             ),
                             modifier = Modifier.padding(end = 4.dp)
                         ) {
