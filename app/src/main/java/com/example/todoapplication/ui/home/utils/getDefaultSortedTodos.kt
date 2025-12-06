@@ -21,12 +21,13 @@ fun getDefaultSortedTodos(
     ascending: Boolean
 ): List<TodoItem> {
     val classifyOrder = mapOf("工作" to 1, "生活" to 2, "学习" to 3)
-    val formatter = java.time.format.DateTimeFormatter.ISO_DATE
+    val formatter = DateTimeFormatter.ISO_DATE
 
+    // 先过滤重复任务或过期任务
     val filtered = todos.filter { todo ->
         if (todo.repeatType == 1) true
         else todo.deadline?.take(10)?.takeIf { it.isNotBlank() }?.let {
-            val date = java.time.LocalDate.parse(it, formatter)
+            val date = LocalDate.parse(it, formatter)
             when (todo.status) {
                 0 -> !date.isBefore(targetDate)
                 1 -> date == targetDate
@@ -36,10 +37,26 @@ fun getDefaultSortedTodos(
     }
 
     val sorted = when (filter) {
-        "状态" -> filtered.sortedBy { it.status }
-        "优先级" -> filtered.sortedBy { it.priority }
-        "类型" -> filtered.sortedBy { classifyOrder[it.classify] ?: 99 }
-        else -> filtered.sortedBy { it.status } // 默认按状态
+        "状态" -> filtered.sortedWith(compareBy(
+            { it.status },                        // 已完成的状态先/后
+            { it.priority },                      // 再按优先级
+            { classifyOrder[it.classify] ?: 99 } // 再按类型
+        ))
+        "优先级" -> filtered.sortedWith(compareBy(
+            { it.priority },                      // 先按优先级
+            { it.status },                        // 每个优先级中已完成放下面
+            { classifyOrder[it.classify] ?: 99 } // 再按类型
+        ))
+        "类型" -> filtered.sortedWith(compareBy(
+            { classifyOrder[it.classify] ?: 99 }, // 先按类型
+            { it.status },                        // 每个类型中已完成放下面
+            { it.priority }                       // 再按优先级
+        ))
+        else -> filtered.sortedWith(compareBy(
+            { it.status },                        // 默认先未完成，已完成放下面
+            { it.priority },                      // 再按优先级
+            { classifyOrder[it.classify] ?: 99 } // 再按类型
+        ))
     }
 
     return if (ascending) sorted else sorted.reversed()

@@ -156,7 +156,7 @@ fun SelectCalendar(
     var menuExpanded by remember { mutableStateOf(false) }
 
     // → 用户选择的条件
-    var selectedFilter by remember { mutableStateOf<String?>(null) }
+//    var selectedFilter by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -256,8 +256,8 @@ fun TodoList(
     val scrollState = rememberScrollState()
 
 
-    val context = LocalContext.current
-    val fileContent = parseUserFile(context)
+//    val context = LocalContext.current
+//    val fileContent = parseUserFile(context)
 
     var sortedTodos = getDefaultSortedTodos(
         todos,
