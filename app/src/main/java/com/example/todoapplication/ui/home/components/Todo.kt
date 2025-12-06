@@ -51,6 +51,7 @@ import com.example.todoapplication.data.model.TodoItem
 import com.example.todoapplication.data.model.TodoUpdate
 import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.data.utils.truncateString
+import com.example.todoapplication.ui.home.utils.calculateGradientWidth
 import com.example.todoapplication.ui.theme.CoralRed
 import com.example.todoapplication.ui.theme.DarkBlue
 import com.example.todoapplication.ui.theme.Gray500
@@ -228,8 +229,8 @@ fun Todo(
                     1 -> listOf(TealSoft.copy(alpha = 0.5f), Color.Transparent)
                     else -> listOf(Color(0xFFE0F7FA), Color.Transparent)
                 }
-                val gradientWidthPx = with(LocalDensity.current) { 60.dp.toPx() }
-
+                val gradientWidthPx = calculateGradientWidth(todo.deadline)
+                gradientWidthPx
                 // Card 内容
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
