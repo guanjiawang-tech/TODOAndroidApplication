@@ -2,7 +2,7 @@ package com.example.todoapplication.data.local
 
 import android.content.Context
 import com.example.todoapplication.data.api.model.DeleteResponse
-import com.example.todoapplication.data.model.Todo
+import com.example.todoapplication.data.model.TodoItem
 import com.example.todoapplication.data.model.TodoUpdate
 import org.json.JSONArray
 import org.json.JSONObject
@@ -12,7 +12,7 @@ object TodoStorage {
 
     private const val FILE_NAME = "data.json"
 
-    fun saveTodo(context: Context, todos: List<Todo>) {
+    fun saveTodo(context: Context, todos: List<TodoItem>) {
         val file = File(context.filesDir, FILE_NAME)
 
         // 如果文件不存在就不写，避免空文件破坏结构
@@ -114,7 +114,7 @@ object TodoStorage {
      * */
     fun addTodo(
         context: Context,
-        todo: Todo
+        todo: TodoItem
     ): Boolean {
         val file = File(context.filesDir, FILE_NAME)
 

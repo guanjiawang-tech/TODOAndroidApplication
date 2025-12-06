@@ -1,6 +1,6 @@
 package com.example.todoapplication.data.api.model
 
-import com.example.todoapplication.data.model.Todo
+import com.example.todoapplication.data.model.TodoItem
 
 
 data class LoginRequest(

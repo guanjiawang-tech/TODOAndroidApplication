@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.todoapplication.data.api.model.DeleteTodoRequest
 import com.example.todoapplication.data.local.TodoStorage
-import com.example.todoapplication.data.model.Todo
+import com.example.todoapplication.data.model.TodoItem
 import com.example.todoapplication.data.model.TodoUpdate
 import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.ui.theme.CoralRed
@@ -57,7 +57,7 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun Todo(
-    data: Todo?,
+    data: TodoItem?,
     revealWidthDp: Dp = 96.dp,         //  Translation width
     onEdit: (String) -> Unit = {
 

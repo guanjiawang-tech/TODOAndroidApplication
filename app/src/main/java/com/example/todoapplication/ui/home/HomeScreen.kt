@@ -32,14 +32,17 @@ import androidx.compose.ui.unit.dp
 import com.example.todoapplication.data.api.model.InsertTodoRequest
 import com.example.todoapplication.data.local.TodoStorage
 import com.example.todoapplication.data.local.parseUserFile
+import com.example.todoapplication.data.model.TodoItem
 import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.ui.home.components.AppDropdownMenu
 import com.example.todoapplication.ui.home.components.DateList
 import com.example.todoapplication.ui.home.components.EditTodoDialog
 import com.example.todoapplication.ui.home.components.Todo
+import com.example.todoapplication.ui.home.utils.getDefaultSortedTodos
 import com.example.todoapplication.ui.theme.BlueNormal
 import com.example.todoapplication.ui.theme.SkyBlue
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @Composable
 fun HomeScreen() {
@@ -224,13 +227,86 @@ fun TodoList() {
     val context = LocalContext.current
     val fileContent = parseUserFile(context)
 
+//    //    测试数据
+//    val testTodos = listOf(
+//        TodoItem(
+//            _id = "674147ff2b338f91fef87cb2",
+//            userId = "674146ce439a8591c4a5841a",
+//            title = "开发TODO Application111",
+//            content = "今天要搭建数据库 for TODO application hello",
+//            createdAt = "2025-12-04T00:00:00.000Z",
+//            deadline = "2025-12-05T00:00:00.000Z",
+//            status = 1,
+//            priority = 1,
+//            repeatType = 0,
+//            classify = "学习"
+//        ),
+//        TodoItem(
+//            _id = "6930d8df881c9afa84283b34",
+//            userId = "674146ce439a8591c4a5841a",
+//            title = "开发TODO Application backend",
+//            content = "今天要搭建 backend for TODO application",
+//            createdAt = "2025-12-04T00:00:00.000Z",
+//            deadline = "2025-12-05T00:00:00.000Z",
+//            status = 1,
+//            priority = 2,
+//            repeatType = 1,
+//            classify = "工作"
+//        ),
+//        TodoItem(
+//            _id = "6933a50477e4fe51cbb596bd",
+//            userId = "674146ce439a8591c4a5841a",
+//            title = "hello 113n",
+//            content = "哈哈哈",
+//            createdAt = "2025-12-06T03:37:40.613Z",
+//            deadline = "2025-12-06T00:00:00.000Z",
+//            status = 0,
+//            priority = 1,
+//            repeatType = 1,
+//            classify = "生活"
+//        ),
+//        TodoItem(
+//            _id = "6933a51477e4fe51cbb596bf",
+//            userId = "674146ce439a8591c4a5841a",
+//            title = "哈哈",
+//            content = "1",
+//            createdAt = "2025-12-06T03:37:56.939Z",
+//            deadline = null,
+//            status = 0,
+//            priority = 1,
+//            repeatType = 1,
+//            classify = "生活"
+//        )
+//    )
+    val today = LocalDate.now()
+
+    val sortedTodos = getDefaultSortedTodos(
+        fileContent?.todos ?: emptyList(),
+        today
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
     ) {
-        fileContent?.todos?.forEach { todo ->
-            Todo(data = todo)
+        if (sortedTodos.isEmpty()) {
+            // 空状态展示
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "暂无待办",
+                    color = androidx.compose.ui.graphics.Color.Gray,
+                )
+            }
+        } else {
+            sortedTodos.forEach { todo ->
+                Todo(data = todo)
+            }
         }
     }
 

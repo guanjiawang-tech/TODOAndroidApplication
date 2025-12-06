@@ -1,6 +1,6 @@
 package com.example.todoapplication.data.api.model
 
-import com.example.todoapplication.data.model.Todo
+import com.example.todoapplication.data.model.TodoItem
 import com.example.todoapplication.data.model.TodoUpdate
 
 
@@ -11,13 +11,13 @@ data class TodoRequest(
 data class TodoResponse(
     val code: Boolean,
     val msg: String,
-    val data: List<Todo>? = null
+    val data: List<TodoItem>? = null
 )
 
 data class TodoResponseByOne(
     val code: Boolean,
     val msg: String,
-    val data: Todo? = null
+    val data: TodoItem? = null
 )
 
 data class DeleteResponse(

@@ -1,6 +1,6 @@
 package com.example.todoapplication.data.model
 
-data class Todo(
+data class TodoItem(
     val _id: String,
     val userId: String,
     val title: String,

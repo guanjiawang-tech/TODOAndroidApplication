@@ -4,7 +4,7 @@
 package com.example.todoapplication.data.local
 
 import android.content.Context
-import com.example.todoapplication.data.model.Todo
+import com.example.todoapplication.data.model.TodoItem
 import com.example.todoapplication.data.model.UserData
 import org.json.JSONArray
 import org.json.JSONObject
@@ -28,14 +28,14 @@ fun parseUserFile(context: Context): UserData? {
             val id  = json.optString("_id")
             val username = json.optString("user")
             val todosJson = json.optJSONArray("todos")
-            val todosList = mutableListOf<Todo>()
+            val todosList = mutableListOf<TodoItem>()
 
             // todos 是字符串形式的数组，需要转换成 List<String>
             if (todosJson != null) {
                 for (i in 0 until todosJson.length()) {
                     val todoJson = todosJson.getJSONObject(i)
 
-                    val todo = Todo(
+                    val todo = TodoItem(
                         _id = todoJson.optString("_id"),
                         userId = todoJson.optString("userId"),
                         title = todoJson.optString("title"),
