@@ -50,6 +50,7 @@ import com.example.todoapplication.data.local.TodoStorage
 import com.example.todoapplication.data.model.TodoItem
 import com.example.todoapplication.data.model.TodoUpdate
 import com.example.todoapplication.data.repository.ToDoRepository
+import com.example.todoapplication.data.utils.truncateString
 import com.example.todoapplication.ui.theme.CoralRed
 import com.example.todoapplication.ui.theme.DarkBlue
 import com.example.todoapplication.ui.theme.Gray500
@@ -258,7 +259,7 @@ fun Todo(
                         }
                     )
                     Text(
-                        text = todo.title,
+                        text = truncateString(todo.title, 20),
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                         color = if (todo.status == 1) Color.Gray else Color.Black,
                         textDecoration = if (todo.status == 1) TextDecoration.LineThrough else TextDecoration.None

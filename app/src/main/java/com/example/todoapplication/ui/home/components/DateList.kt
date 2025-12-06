@@ -38,7 +38,9 @@ fun DateList(
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp)
+                .padding(vertical = 4.dp),
+            contentPadding = PaddingValues(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp) // 元素间距
         ) {
             items(weekDates) { date ->
 
@@ -47,7 +49,7 @@ fun DateList(
 
                 Column(
                     modifier = Modifier
-                        .width(60.dp)                // 元素宽度固定(不会超屏)
+                        .width(46.dp)                // 元素宽度固定(不会超屏)
                         .clickable {
                             onDateChange(date)
                         },
