@@ -97,7 +97,15 @@ fun HomeScreen() {
                 todos = todoList,
                 selectedDate = selectedDate,
                 selectedFilter = selectedFilter,
-                isAscending = isAscending
+                isAscending = isAscending,
+                onDeleteTodo = { todo ->
+                    todoList = todoList.filter { it._id != todo._id }
+                },
+                onEditTodo = { updatedTodo ->
+                    todoList = todoList.map {
+                        if (it._id == updatedTodo._id) updatedTodo else it
+                    }
+                }
             )
         }
     }
@@ -261,12 +269,12 @@ fun TodoList(
 ) {
     val scrollState = rememberScrollState()
 
-    var todoList by remember { mutableStateOf(todos) }
+//    var todoList by remember { mutableStateOf(todos) }
 //    val context = LocalContext.current
 //    val fileContent = parseUserFile(context)
 
     var sortedTodos = getDefaultSortedTodos(
-        todoList,
+        todos,
         selectedDate,
         selectedFilter,
         isAscending
@@ -356,17 +364,10 @@ fun TodoList(
                     Todo(
                         data = todo,
                         onDelete = {
-                            // 删除时更新列表，触发 Compose 重组
-                            todoList = todoList.filter { it._id != todo._id }
-
                             onDeleteTodo(todo)
                         },
-                        onEdit = { newTitle ->
-                            // 编辑时也可以更新列表
-                            todoList = todoList.map {
-                                if (it._id == todo._id) it.copy(title = newTitle) else it
-                            }
-                            onEditTodo(todo.copy(title = newTitle))
+                        onEdit = { updatedTodo ->
+                            onEditTodo(todo.copy(title = updatedTodo))
                         }
                     )
                 }
