@@ -84,6 +84,22 @@ object TodoStorage {
 
                 json.put("todos", todosArray)
                 file.writeText(json.toString())
+
+                TodoSyncManager.addOperation(
+                    context,
+                    type = "update",
+                    todoId = todoId,
+                    updates = TodoUpdate(
+                        title = updates["title"] as? String,
+                        content = updates["content"] as? String,
+                        deadline = updates["deadline"] as? String,
+                        status = updates["status"] as? Int,
+                        priority = updates["priority"] as? Int,
+                        repeatType = updates["repeatType"] as? Int,
+                        classify = updates["classify"] as? String
+                    )
+                )
+
                 return true
             }
         }
@@ -150,6 +166,8 @@ object TodoStorage {
         // 写回文件
         file.writeText(json.toString())
 
+        TodoSyncManager.addOperation(context, "insert", insertData = todoJson)
+
         return true
     }
 
@@ -177,6 +195,9 @@ object TodoStorage {
 
         json.put("todos", newArray)
         file.writeText(json.toString())
+
+        TodoSyncManager.addOperation(context, "delete", todoId = todoId)
+
         return DeleteResponse(true, "Success")
     }
 

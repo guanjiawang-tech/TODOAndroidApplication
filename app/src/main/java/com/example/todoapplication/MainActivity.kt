@@ -20,6 +20,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.todoapplication.data.api.Client.apiService
 import com.example.todoapplication.data.local.TodoStorage
+import com.example.todoapplication.data.local.TodoSyncManager
 import com.example.todoapplication.data.local.UserStorage
 import com.example.todoapplication.data.local.parseUserFile
 import com.example.todoapplication.data.repository.ToDoRepository
@@ -99,7 +101,12 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppLayout(onLogout: () -> Unit) {
+fun AppLayout(
+    onLogout: () -> Unit
+) {
+
+    val context = LocalContext.current
+    val repo = remember { ToDoRepository() }
 
     /**
      * Page Status
@@ -107,6 +114,13 @@ fun AppLayout(onLogout: () -> Unit) {
      * 1 -> 我的
      * */
     var selectedTab by remember { mutableStateOf(0) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(selectedTab) {
+        if (selectedTab == 0) {
+            TodoSyncManager.syncQueue(context, repo)
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -124,7 +138,15 @@ fun AppLayout(onLogout: () -> Unit) {
 
             when(selectedTab){
                 0 -> HomeScreen()
-                1 -> UserScreen(onLogout)
+                1 -> UserScreen(
+                    onLogout,
+                    onClearCache = {
+                        selectedTab = 0 // 切换回首页
+                        scope.launch {
+                            TodoSyncManager.syncQueue(context, repo)
+                        }
+                    }
+                )
             }
         }
     }

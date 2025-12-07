@@ -29,13 +29,16 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun UserScreen(
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onClearCache: () -> Unit
 ) {
 
     val context = LocalContext.current
     val fileContent = parseUserFile(context)
 
-    var showLogoutDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember {
+        mutableStateOf(false)
+    }
 //    val scope = rememberCoroutineScope()
 
     val menuItems = listOf(
@@ -43,7 +46,10 @@ fun UserScreen(
             "清除缓存",
             StripConfig(isShow = true, stripHeight = 16, stripColor = Color.Blue),
             true,
-            onClick = { UserStorage.clearUser(context) }
+            onClick = {
+                onClearCache()
+                UserStorage.clearUser(context)
+            }
         ),
         ProfileMenuItem(
             "读取文件",
@@ -88,6 +94,7 @@ fun UserScreen(
         if (showLogoutDialog) {
             LogoutDialog(
                 onConfirm = {
+                    onClearCache()
                     UserStorage.clearUser(context)
                     showLogoutDialog = false
                     onLogout() // 通知 MainActivity 更新状态
