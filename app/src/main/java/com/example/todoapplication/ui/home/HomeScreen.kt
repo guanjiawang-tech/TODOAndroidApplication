@@ -59,6 +59,7 @@ fun HomeScreen() {
     var isAscending by remember { mutableStateOf(false) }
     // 查询条件状态
     var selectedFilter by remember { mutableStateOf("默认") }
+    var todoList by remember { mutableStateOf(fileContent?.todos ?: emptyList()) }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -93,7 +94,7 @@ fun HomeScreen() {
             contentAlignment = Alignment.Center
         ) {
             TodoList(
-                todos = fileContent?.todos ?: emptyList(),
+                todos = todoList,
                 selectedDate = selectedDate,
                 selectedFilter = selectedFilter,
                 isAscending = isAscending
@@ -132,6 +133,9 @@ fun HomeScreen() {
                 scope.launch {
                     val response = repo.insertTodo(todoRequest)
                     if (response?.code == true && response.data != null) {
+
+                        todoList = todoList + response.data
+
                         TodoStorage.addTodo(context, response.data)
                     }
                 }
@@ -251,16 +255,18 @@ fun TodoList(
     todos: List<TodoItem>,
     selectedDate: LocalDate,
     selectedFilter: String,
-    isAscending: Boolean
+    isAscending: Boolean,
+    onDeleteTodo: (TodoItem) -> Unit = {},
+    onEditTodo: (TodoItem) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
-
+    var todoList by remember { mutableStateOf(todos) }
 //    val context = LocalContext.current
 //    val fileContent = parseUserFile(context)
 
     var sortedTodos = getDefaultSortedTodos(
-        todos,
+        todoList,
         selectedDate,
         selectedFilter,
         isAscending
@@ -347,7 +353,22 @@ fun TodoList(
         } else {
             sortedTodos.forEach { todo ->
                 key(todo._id) {
-                    Todo(data = todo)
+                    Todo(
+                        data = todo,
+                        onDelete = {
+                            // 删除时更新列表，触发 Compose 重组
+                            todoList = todoList.filter { it._id != todo._id }
+
+                            onDeleteTodo(todo)
+                        },
+                        onEdit = { newTitle ->
+                            // 编辑时也可以更新列表
+                            todoList = todoList.map {
+                                if (it._id == todo._id) it.copy(title = newTitle) else it
+                            }
+                            onEditTodo(todo.copy(title = newTitle))
+                        }
+                    )
                 }
             }
         }

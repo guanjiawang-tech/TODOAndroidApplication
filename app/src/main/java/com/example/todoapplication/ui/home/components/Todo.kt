@@ -97,6 +97,14 @@ fun Todo(
             onDismiss = { showDialog.value = false },
             onConfirm = { newTitle, newContent, newDeadline, newPriority, newRepeat, category ->
                 showDialog.value = false
+                todo = todo.copy(
+                    title = newTitle,
+                    content = newContent,
+                    deadline = newDeadline,
+                    priority = newPriority,
+                    repeatType = if (newRepeat) 1 else 0,
+                    classify = category
+                )
                 // 更新本地数据
                 val updatedTodo = TodoUpdate(
                     title = newTitle,
@@ -153,7 +161,7 @@ fun Todo(
                     repo.deleteTodo(id)
                 }
 
-//                onDelete() // 通知父组件更新列表
+                onDelete() // 通知父组件更新列表
             },
             onDismiss = { showDeleteDialog.value = false }
         )
