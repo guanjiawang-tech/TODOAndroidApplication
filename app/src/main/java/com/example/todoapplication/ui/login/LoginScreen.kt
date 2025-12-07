@@ -42,7 +42,9 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.todoapplication.R
 import com.example.todoapplication.data.api.ApiService
 import com.example.todoapplication.data.api.model.LoginRequest
+import com.example.todoapplication.data.local.RepeatListStorage
 import com.example.todoapplication.data.local.UserStorage
+import com.example.todoapplication.data.repository.RepeatListRepository
 import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.data.repository.UserRepository
 import com.example.todoapplication.ui.components.Lines
@@ -137,11 +139,22 @@ fun LoginScreen(
                             val response = UserRepository.Login(username, password)
                             println("登录成功: ${response}")
                             if (response != null && response.code) {
+                                // 保存用户信息
                                 UserStorage.saveUser(
                                     context,
                                     response.data?.username.toString(),
                                     response.data?.userId.toString()
                                 )
+                                //  初始化 list.json
+                                RepeatListStorage.init(context)
+                                val repo = RepeatListRepository()
+                                val repeatListResponse = repo.getAllRepeatList(
+                                    response.data?.userId ?: "")
+
+                                if (repeatListResponse != null && repeatListResponse.code) {
+                                    RepeatListStorage.save(context, repeatListResponse)
+                                }
+
                                 onLoginSuccess(username)
                             } else {
 //                                println("登录失败")

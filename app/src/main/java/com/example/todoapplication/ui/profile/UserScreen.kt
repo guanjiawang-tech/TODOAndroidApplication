@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import com.example.todoapplication.data.local.RepeatListStorage
 import com.example.todoapplication.data.local.UserStorage
 import com.example.todoapplication.data.local.parseUserFile
 import com.example.todoapplication.data.model.ProfileMenuItem
@@ -35,6 +36,7 @@ fun UserScreen(
 
     val context = LocalContext.current
     val fileContent = parseUserFile(context)
+    val repeatList = RepeatListStorage.load(context)
 
     var showLogoutDialog by remember {
         mutableStateOf(false)
@@ -55,7 +57,10 @@ fun UserScreen(
             "读取文件",
             StripConfig(isShow = true, stripHeight = 16, stripColor = Color.Blue),
             true,
-            onClick = { println("data.json 内容: $fileContent") }
+            onClick = {
+                println("data.json 内容: $fileContent")
+                println("repeatList.json 内容: $repeatList")
+            }
         ),
         ProfileMenuItem(
             "退出登录",

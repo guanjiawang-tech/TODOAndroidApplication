@@ -5,14 +5,17 @@ import com.example.todoapplication.data.api.model.DeleteTodoRequest
 import com.example.todoapplication.data.api.model.InsertTodoRequest
 import com.example.todoapplication.data.api.model.LoginRequest
 import com.example.todoapplication.data.api.model.LoginResponse
+import com.example.todoapplication.data.api.model.RepeatListResponse
 import com.example.todoapplication.data.api.model.TodoRequest
 import com.example.todoapplication.data.api.model.TodoResponse
 import com.example.todoapplication.data.api.model.TodoResponseByOne
 import com.example.todoapplication.data.api.model.UpdateTodoRequest
 import com.example.todoapplication.data.model.TodoUpdate
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 
 interface ApiService {
@@ -53,5 +56,10 @@ interface ApiService {
     suspend fun deleteTodo(
         @Body request: DeleteTodoRequest
     ): DeleteResponse
+
+    @GET("/getAllRepeatList")
+    suspend fun getAllRepeatList(
+        @Query("userId") userId: String
+    ): RepeatListResponse
 
 }

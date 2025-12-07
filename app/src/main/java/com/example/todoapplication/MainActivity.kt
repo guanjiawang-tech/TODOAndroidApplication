@@ -34,10 +34,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.todoapplication.data.api.Client.apiService
+import com.example.todoapplication.data.local.RepeatListStorage
 import com.example.todoapplication.data.local.TodoStorage
 import com.example.todoapplication.data.local.TodoSyncManager
 import com.example.todoapplication.data.local.UserStorage
 import com.example.todoapplication.data.local.parseUserFile
+import com.example.todoapplication.data.repository.RepeatListRepository
 import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.ui.home.HomeScreen
 import com.example.todoapplication.ui.login.LoginScreen
@@ -83,6 +85,8 @@ class MainActivity : ComponentActivity() {
 
                     scope.launch {
                         val repo = ToDoRepository()
+                        val repeatListRepo = RepeatListRepository()
+
                         val todoResponse  = repo.GetTodoList(fileContent?.id ?: "")
 
                         if (todoResponse?.code == true && !todoResponse.data.isNullOrEmpty()) {
@@ -90,6 +94,15 @@ class MainActivity : ComponentActivity() {
                             println("已写入文件 --> ${todoResponse.data!!.size} 条记录")
                         } else {
                             println("未获取到 Todo 数据")
+                        }
+
+                        val repeatResponse = repeatListRepo.getAllRepeatList(fileContent?.id ?: "")
+
+                        repeatResponse?.let {
+                            RepeatListStorage.save(context, it)
+                            println("已写入 RepeatList.json，数量: ${it.data?.size ?: 0}")
+                        } ?: run {
+                            println("未获取到 RepeatList 数据")
                         }
 
 //                        println("List -> $todoResponse ")
