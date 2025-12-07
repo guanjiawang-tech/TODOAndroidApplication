@@ -166,13 +166,13 @@ fun EditTodoDialog(
 
 
                 // Repeat Type
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("重复: ", modifier = Modifier.padding(end = 8.dp))
-                    Switch(
-                        checked = repeatTypeState.value,
-                        onCheckedChange = { repeatTypeState.value = it }
-                    )
-                }
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Text("重复: ", modifier = Modifier.padding(end = 8.dp))
+//                    Switch(
+//                        checked = repeatTypeState.value,
+//                        onCheckedChange = { repeatTypeState.value = it }
+//                    )
+//                }
 
             }
         },
