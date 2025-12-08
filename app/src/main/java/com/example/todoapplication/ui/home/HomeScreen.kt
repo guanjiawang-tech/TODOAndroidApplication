@@ -211,7 +211,7 @@ fun SelectCalendar(
             )
         }
 
-        // 下部分：可以放日期、标题等，占 4/5
+        // 下部分：放日期
         Box(
             modifier = Modifier
                 .fillMaxWidth()
