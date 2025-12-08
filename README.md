@@ -45,7 +45,7 @@
 >
 >       ```
 >       cd D:\...\CodeSpace\TODOAndroidApplicationBackend
->       
+>          
 >       node server.js
 >       ```
 >
@@ -73,7 +73,7 @@
 
 ## 注意事项
 
-- 本地数据文件位置：`<应用内部存储>/data.json`
+- 本地数据文件位置：`<应用内部存储>/data.json` `<应用内部存储>/repeatList.json`
 - 登录状态下，需要网络访问 MongoDB
 - 游客登录下，只需要点击跳过登录就可以了
 - 退出应用会丢失本地数据！
