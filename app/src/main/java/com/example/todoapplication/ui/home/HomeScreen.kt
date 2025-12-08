@@ -46,20 +46,27 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @Composable
-fun HomeScreen() {
+    fun HomeScreen() {
 
-    val context = LocalContext.current
-    val fileContent = parseUserFile(context)
-    val scope = rememberCoroutineScope()
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
 
-    var showDialog by remember { mutableStateOf(false) }
-    // 维护选择的日期状态
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-    // 升序/降序状态
-    var isAscending by remember { mutableStateOf(false) }
-    // 查询条件状态
-    var selectedFilter by remember { mutableStateOf("默认") }
-    var todoList by remember { mutableStateOf(fileContent?.todos ?: emptyList()) }
+        var showDialog by remember { mutableStateOf(false) }
+        // 维护选择的日期状态
+        var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+        // 升序/降序状态
+        var isAscending by remember { mutableStateOf(false) }
+        // 查询条件状态
+        var selectedFilter by remember { mutableStateOf("默认") }
+
+        // 在selectedDate变化时重新获取任务列表
+        val fileContent = remember(selectedDate) {
+            parseUserFile(context)
+        }
+        
+        var todoList by remember(fileContent) {
+            mutableStateOf(fileContent?.todos ?: emptyList())
+        }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -259,27 +266,26 @@ fun SelectCalendar(
  * To do List
  * */
 @Composable
-fun TodoList(
-    todos: List<TodoItem>,
-    selectedDate: LocalDate,
-    selectedFilter: String,
-    isAscending: Boolean,
-    onDeleteTodo: (TodoItem) -> Unit = {},
-    onEditTodo: (TodoItem) -> Unit = {}
-) {
-    val scrollState = rememberScrollState()
+    fun TodoList(
+        todos: List<TodoItem>,
+        selectedDate: LocalDate,
+        selectedFilter: String,
+        isAscending: Boolean,
+        onDeleteTodo: (TodoItem) -> Unit = {},
+        onEditTodo: (TodoItem) -> Unit = {}
+    ) {
+        val scrollState = rememberScrollState()
 
-//    var todoList by remember { mutableStateOf(todos) }
-//    val context = LocalContext.current
-//    val fileContent = parseUserFile(context)
-
-    var sortedTodos = getDefaultSortedTodos(
-        todos,
-        selectedDate,
-        selectedFilter,
-        isAscending
-    )
-    sortedTodos
+        // 使用remember记住sortedTodos，确保在selectedDate等依赖项变化时重新计算
+        val sortedTodos = remember(todos, selectedDate, selectedFilter, isAscending) {
+            getDefaultSortedTodos(
+                todos,
+                selectedDate,
+                selectedFilter,
+                isAscending
+            )
+        }
+//    sortedTodos
 //    sortedTodos = if (isAscending) sortedTodos else sortedTodos.reversed()
 
 //    //    测试数据

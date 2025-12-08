@@ -99,6 +99,8 @@ fun DateList(
                     .padding(8.dp)
                     .clickable {
                         currentWeekStart = currentWeekStart.minusWeeks(1)
+                        val dayOfWeekOffset = (selectedDate.dayOfWeek.value - 1).toLong()
+                        onDateChange(currentWeekStart.plusDays(dayOfWeekOffset))
                     },
                 color = BlueNormal
             )
@@ -109,6 +111,8 @@ fun DateList(
                     .padding(8.dp)
                     .clickable {
                         currentWeekStart = currentWeekStart.plusWeeks(1)
+                        val dayOfWeekOffset = (selectedDate.dayOfWeek.value - 1).toLong()
+                        onDateChange(currentWeekStart.plusDays(dayOfWeekOffset))
                     },
                 color = BlueNormal
             )
