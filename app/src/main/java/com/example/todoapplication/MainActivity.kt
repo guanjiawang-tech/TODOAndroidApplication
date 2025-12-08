@@ -126,7 +126,7 @@ fun AppLayout(
      * 0 -> 首页
      * 1 -> 我的
      * */
-    var selectedTab by remember { mutableStateOf(0) }
+    var selectedTab by remember { mutableStateOf(1) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(selectedTab) {

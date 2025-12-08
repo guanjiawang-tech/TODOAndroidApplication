@@ -279,7 +279,7 @@ fun TodoList(
         selectedFilter,
         isAscending
     )
-
+    sortedTodos
 //    sortedTodos = if (isAscending) sortedTodos else sortedTodos.reversed()
 
 //    //    测试数据
@@ -363,6 +363,7 @@ fun TodoList(
                 key(todo._id) {
                     Todo(
                         data = todo,
+                        selectedDate = selectedDate,
                         onDelete = {
                             onDeleteTodo(todo)
                         },

@@ -46,9 +46,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.todoapplication.data.api.model.DeleteTodoRequest
+import com.example.todoapplication.data.local.RepeatListStorage.getCompletedDates
+import com.example.todoapplication.data.local.RepeatListStorage.updateCompletedDate
 import com.example.todoapplication.data.local.TodoStorage
+import com.example.todoapplication.data.local.parseUserFile
 import com.example.todoapplication.data.model.TodoItem
 import com.example.todoapplication.data.model.TodoUpdate
+import com.example.todoapplication.data.repository.RepeatListRepository
 import com.example.todoapplication.data.repository.ToDoRepository
 import com.example.todoapplication.data.utils.truncateString
 import com.example.todoapplication.ui.home.utils.calculateGradientWidth
@@ -57,6 +61,7 @@ import com.example.todoapplication.ui.theme.DarkBlue
 import com.example.todoapplication.ui.theme.Gray500
 import com.example.todoapplication.ui.theme.TealSoft
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import kotlin.math.roundToInt
 
 
@@ -64,6 +69,7 @@ import kotlin.math.roundToInt
 @Composable
 fun Todo(
     data: TodoItem?,
+    selectedDate: LocalDate,
     revealWidthDp: Dp = 96.dp,         //  Translation width
     onEdit: (String) -> Unit = {
 
@@ -78,6 +84,12 @@ fun Todo(
     val offsetX = remember { Animatable(0f) }
     val isChecked = remember { mutableStateOf((data?.status ?: 0) == 1) }
     var todo by remember { mutableStateOf(data!!) }
+
+    // 获取当前 todo 在 selectedDate 是否完成
+    val completedDates = remember { mutableStateOf(getCompletedDates(context, todo._id)) }
+    val isCompleted = remember(selectedDate, completedDates.value) {
+        mutableStateOf(completedDates.value.contains(selectedDate.toString()))
+    }
 
     val repo = ToDoRepository()
 
@@ -253,16 +265,50 @@ fun Todo(
                         )
                 ) {
                     Checkbox(
-                        checked = todo.status == 1,
+                        checked = if (todo.repeatType == 1) isCompleted.value else isChecked.value,
                         onCheckedChange = { checked ->
-                            val newStatus = if (checked) 1 else 0
-                            TodoStorage.updateTodo(context, todoId = todo._id, update = TodoUpdate(status = newStatus))
-                            todo = todo.copy(status = newStatus)
-                            scope.launch {
-                                try {
-                                    repo.updateTodo(todoId = todo._id, updates = TodoUpdate(status = newStatus))
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
+                            if (todo.repeatType == 1) {
+                                // 重复任务：基于日期完成逻辑
+                                isCompleted.value = checked
+                                updateCompletedDate(context, todo._id, selectedDate.toString(), checked)
+                                completedDates.value = getCompletedDates(context, todo._id)
+
+                                // 调用后端同步完成状态
+                                scope.launch {
+                                    try {
+                                        val repeatRepo = RepeatListRepository()
+                                        val userId = parseUserFile(context)?.id ?: return@launch
+                                        val dateStr = selectedDate.toString()
+                                        val response = repeatRepo.repeatList(todo._id, userId, dateStr)
+                                        if (response?.code == true) {
+                                            println("重复任务后端更新成功")
+                                        } else {
+                                            println("重复任务后端更新失败")
+                                        }
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                            } else {
+                                // 普通任务：基于 status
+                                isChecked.value = checked
+                                todo = todo.copy(status = if (checked) 1 else 0)
+                                // 更新本地
+                                TodoStorage.updateTodo(
+                                    context,
+                                    todoId = todo._id,
+                                    update = TodoUpdate(status = if (checked) 1 else 0)
+                                )
+                                // 调用后端更新
+                                scope.launch {
+                                    try {
+                                        ToDoRepository().updateTodo(
+                                            todoId = todo._id,
+                                            updates = TodoUpdate(status = if (checked) 1 else 0)
+                                        )
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
                                 }
                             }
                         }

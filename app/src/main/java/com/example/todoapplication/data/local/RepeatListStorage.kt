@@ -65,4 +65,52 @@ object RepeatListStorage {
         val file = File(context.filesDir, FILE_NAME)
         if (file.exists()) file.delete()
     }
+
+    fun getCompletedDates(context: Context, todoId: String): List<String> {
+        val repeatList = RepeatListStorage.load(context) ?: return emptyList()
+        for (i in 0 until repeatList.length()) {
+            val obj = repeatList.getJSONObject(i)
+            if (obj.getString("todoId") == todoId) {
+                val dateArray = obj.getJSONArray("date")
+                return List(dateArray.length()) { dateArray.getString(it) }
+            }
+        }
+        return emptyList()
+    }
+
+    fun updateCompletedDate(context: Context, todoId: String, date: String, checked: Boolean) {
+        val repeatList = RepeatListStorage.load(context) ?: JSONArray()
+        var found = false
+        for (i in 0 until repeatList.length()) {
+            val obj = repeatList.getJSONObject(i)
+            if (obj.getString("todoId") == todoId) {
+                found = true
+                val dateArray = obj.getJSONArray("date")
+                if (checked) {
+                    if (!List(dateArray.length()) { dateArray.getString(it) }.contains(date)) {
+                        dateArray.put(date)
+                    }
+                } else {
+                    val newArray = JSONArray()
+                    for (j in 0 until dateArray.length()) {
+                        val d = dateArray.getString(j)
+                        if (d != date) newArray.put(d)
+                    }
+                    obj.put("date", newArray)
+                }
+                break
+            }
+        }
+        if (!found && checked) {
+            val obj = JSONObject()
+            obj.put("todoId", todoId)
+            obj.put("_id", System.currentTimeMillis().toString())
+            obj.put("date", JSONArray().put(date))
+            repeatList.put(obj)
+        }
+        // 保存回文件
+        val root = JSONObject().apply { put("repeatList", repeatList) }
+        val file = File(context.filesDir, "repeatList.json")
+        file.writeText(root.toString())
+    }
 }
