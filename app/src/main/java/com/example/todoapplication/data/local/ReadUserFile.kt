@@ -43,7 +43,7 @@ fun parseUserFile(context: Context): UserData? {
                         createdAt = todoJson.optString("createdAt"),
                         deadline = todoJson.optString("deadline"),
                         status = todoJson.optInt("status"),
-                        priority = todoJson.optInt("priority"),
+                        priority = todoJson.optInt("priority", 1),
                         repeatType = todoJson.optInt("repeatType"),
                         classify = todoJson.optString("classify")
                     )

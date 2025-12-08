@@ -77,10 +77,10 @@ object TodoSyncManager {
                             title = updatesJson.optString("title", null),
                             content = updatesJson.optString("content", null),
                             deadline = updatesJson.optString("deadline", null),
-                            priority = updatesJson.optInt("priority", 1),
-                            repeatType = updatesJson.optInt("repeatType", 0),
+                            priority = if (updatesJson.has("priority")) updatesJson.optInt("priority") else null,
+                            repeatType = if (updatesJson.has("repeatType")) updatesJson.optInt("repeatType") else null,
                             classify = updatesJson.optString("classify", null),
-                            status = updatesJson.optInt("status", 0)
+                            status = if (updatesJson.has("status")) updatesJson.optInt("status") else null
                         )
                         repo.updateTodo(todoId, updates)
                     }
