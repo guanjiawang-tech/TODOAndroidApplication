@@ -316,8 +316,16 @@ fun Todo(
                     Text(
                         text = truncateString(todo.title, 20),
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                        color = if (todo.status == 1) Color.Gray else Color.Black,
-                        textDecoration = if (todo.status == 1) TextDecoration.LineThrough else TextDecoration.None
+                        color = if (todo.repeatType == 1) {
+                            if (isCompleted.value) Color.Gray else Color.Black
+                        } else {
+                            if (todo.status == 1) Color.Gray else Color.Black
+                        },
+                        textDecoration = if (todo.repeatType == 1) {
+                            if (isCompleted.value) TextDecoration.LineThrough else TextDecoration.None
+                        } else {
+                            if (todo.status == 1) TextDecoration.LineThrough else TextDecoration.None
+                        }
                     )
                 }
             }
