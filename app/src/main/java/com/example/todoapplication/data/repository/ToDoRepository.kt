@@ -45,12 +45,13 @@ class ToDoRepository {
     ): TodoResponseByOne? {
         return try {
             val safeDeadline = todo.deadline?.takeIf { it != "null" } ?: LocalDate.now().toString()
+            val safeContent = todo.content?.takeIf { it.isNotBlank() && it != "null" } ?: "无"
 
             Client.apiService.insertTodo(
                 InsertTodoRequest(
                     todo.userId,
                     todo.title,
-                    todo.content,
+                    safeContent,
                     safeDeadline,
                     todo.status,
                     todo.priority,

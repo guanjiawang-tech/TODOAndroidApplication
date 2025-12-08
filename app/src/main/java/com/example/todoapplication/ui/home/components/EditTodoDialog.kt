@@ -54,6 +54,8 @@ fun EditTodoDialog(
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val dateFormatter = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    //  校验
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     fun openDatePicker() {
         if (!repeatTypeState.value) {  // 只有 repeatType 关闭时才能选择日期
@@ -175,18 +177,39 @@ fun EditTodoDialog(
                 }
 
             }
+            if (errorMessage != null) {
+                ErrorDialog(
+                    message = errorMessage!!,
+                    onDismiss = { errorMessage = null }
+                )
+            }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    onConfirm(
-                        titleState.value,
-                        contentState.value,
-                        if (deadlineState.value.isEmpty()) null else deadlineState.value,
-                        priorityState.value,
-                        repeatTypeState.value,
-                        categoryState.value
-                    )
+                    when {
+                        titleState.value.isBlank() -> {
+                        errorMessage = "标题不能为空！"
+                        return@TextButton
+                    }
+
+                        !repeatTypeState.value && deadlineState.value.isBlank() -> {
+                        errorMessage = "非重复任务必须选择截止时间！"
+                        return@TextButton
+                    }
+
+                        else -> {
+                        errorMessage = null
+                        onConfirm(
+                            titleState.value,
+                            contentState.value,
+                            if (deadlineState.value.isEmpty()) null else deadlineState.value,
+                            priorityState.value,
+                            repeatTypeState.value,
+                            categoryState.value
+                        )
+                        }
+                    }
                 }
             ) {
                 Text("确定")
