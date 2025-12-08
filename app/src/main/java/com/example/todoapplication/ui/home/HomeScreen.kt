@@ -365,18 +365,103 @@ fun SelectCalendar(
                 )
             }
         } else {
-            sortedTodos.forEach { todo ->
-                key(todo._id) {
-                    Todo(
-                        data = todo,
-                        selectedDate = selectedDate,
-                        onDelete = {
-                            onDeleteTodo(todo)
-                        },
-                        onEdit = { updatedTodo ->
-                            onEditTodo(todo.copy(title = updatedTodo))
+            // 按类型分组显示
+            if (selectedFilter == "类型") {
+                // 定义类型顺序
+                val typeOrder = listOf("工作", "生活", "学习")
+                
+                // 按类型分组
+                val groupedTodos = sortedTodos.groupBy { it.classify }
+                
+                // 按照指定顺序显示每个类型的分组
+                typeOrder.forEach { type ->
+                    val typeTodos = groupedTodos[type]
+                    if (!typeTodos.isNullOrEmpty()) {
+                        // 类型标题
+                        Text(
+                            text = type,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            color = androidx.compose.ui.graphics.Color.Black
+                        )
+                        
+                        // 该类型下的待办事项
+                        typeTodos.forEach { todo ->
+                            key(todo._id) {
+                                Todo(
+                                    data = todo,
+                                    selectedDate = selectedDate,
+                                    onDelete = {
+                                        onDeleteTodo(todo)
+                                    },
+                                    onEdit = { updatedTodo ->
+                                        onEditTodo(todo.copy(title = updatedTodo))
+                                    }
+                                )
+                            }
                         }
-                    )
+                        
+                        // 类型之间的分隔
+                        androidx.compose.material.Divider(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = androidx.compose.ui.graphics.Color.White
+                        )
+                    }
+                }
+                
+                // 显示其他未定义类型的待办（如果有）
+                val otherTypes = groupedTodos.keys - typeOrder.toSet()
+                otherTypes.forEach { type ->
+                    val typeTodos = groupedTodos[type]
+                    if (!typeTodos.isNullOrEmpty()) {
+                        Text(
+                            text = type,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(androidx.compose.ui.graphics.Color.LightGray)
+                                .padding(8.dp),
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                            color = androidx.compose.ui.graphics.Color.Black
+                        )
+                        
+                        typeTodos.forEach { todo ->
+                            key(todo._id) {
+                                Todo(
+                                    data = todo,
+                                    selectedDate = selectedDate,
+                                    onDelete = {
+                                        onDeleteTodo(todo)
+                                    },
+                                    onEdit = { updatedTodo ->
+                                        onEditTodo(todo.copy(title = updatedTodo))
+                                    }
+                                )
+                            }
+                        }
+                        
+                        androidx.compose.material.Divider(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = androidx.compose.ui.graphics.Color.White
+                        )
+                    }
+                }
+            } else {
+                // 非类型筛选时，正常显示所有待办
+                sortedTodos.forEach { todo ->
+                    key(todo._id) {
+                        Todo(
+                            data = todo,
+                            selectedDate = selectedDate,
+                            onDelete = {
+                                onDeleteTodo(todo)
+                            },
+                            onEdit = { updatedTodo ->
+                                onEditTodo(todo.copy(title = updatedTodo))
+                            }
+                        )
+                    }
                 }
             }
         }

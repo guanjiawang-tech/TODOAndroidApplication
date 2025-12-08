@@ -13,51 +13,64 @@ import com.example.todoapplication.data.model.TodoItem
  * @param sortField 排序字段：状态 / 优先级 / 类型
  * @param sortOrder 排序顺序：升序 / 降序
  */
-
 fun getDefaultSortedTodos(
     todos: List<TodoItem>,
     targetDate: LocalDate,
     filter: String,
     ascending: Boolean
 ): List<TodoItem> {
+
     val classifyOrder = mapOf("工作" to 1, "生活" to 2, "学习" to 3)
     val formatter = DateTimeFormatter.ISO_DATE
 
-    // 先过滤重复任务或过期任务
+    /**
+     * 1. 过滤条件（保留重复任务或未过期任务）
+     */
     val filtered = todos.filter { todo ->
-        if (todo.repeatType == 1) true
-        else todo.deadline?.take(10)?.takeIf { it.isNotBlank() }?.let {
-            val date = LocalDate.parse(it, formatter)
-            when (todo.status) {
-                0 -> !date.isBefore(targetDate)
-                1 -> date == targetDate
-                else -> false
-            }
-        } ?: false
+        if (todo.repeatType == 1) return@filter true
+
+        val dateStr = todo.deadline?.take(10)?.takeIf { it.isNotBlank() } ?: return@filter false
+        val date = LocalDate.parse(dateStr, formatter)
+
+        // 未完成显示未来任务；完成只显示当天
+        when (todo.status) {
+            1 -> date == targetDate   // 已完成显示当天的
+            0 -> !date.isBefore(targetDate) // 未完成显示未来及当天
+            else -> false
+        }
     }
 
-    val sorted = when (filter) {
-        "状态" -> filtered.sortedWith(compareBy(
-            { it.status },                        // 已完成的状态先/后
-            { it.priority },                      // 再按优先级
-            { classifyOrder[it.classify] ?: 99 } // 再按类型
-        ))
-        "优先级" -> filtered.sortedWith(compareBy(
-            { it.priority },                      // 先按优先级
-            { it.status },                        // 每个优先级中已完成放下面
-            { classifyOrder[it.classify] ?: 99 } // 再按类型
-        ))
-        "类型" -> filtered.sortedWith(compareBy(
-            { classifyOrder[it.classify] ?: 99 }, // 先按类型
-            { it.status },                        // 每个类型中已完成放下面
-            { it.priority }                       // 再按优先级
-        ))
-        else -> filtered.sortedWith(compareBy(
-            { it.status },                        // 默认先未完成，已完成放下面
-            { it.priority },                      // 再按优先级
-            { classifyOrder[it.classify] ?: 99 } // 再按类型
-        ))
+    /**
+     * 2. 排序字段优先级定义（完成 → 上）
+     *    status: 1 → 0 (完成排前面)
+     */
+    val comparator = when (filter) {
+
+        "状态" -> compareBy<TodoItem>(
+            { 1 - it.status },                     // 🔥 已完成排上面
+            { it.priority },
+            { classifyOrder[it.classify] ?: 99 }
+        )
+
+        "优先级" -> compareBy(
+            { it.priority },
+            { 1 - it.status },                     // 次排序时也遵循完成优先
+            { classifyOrder[it.classify] ?: 99 }
+        )
+
+        "类型" -> compareBy(
+            { classifyOrder[it.classify] ?: 99 },
+            { 1 - it.status },
+            { it.priority }
+        )
+
+        else -> compareBy(
+            { 1 - it.status },
+            { it.priority },
+            { classifyOrder[it.classify] ?: 99 }
+        )
     }
 
-    return if (ascending) sorted else sorted.reversed()
+    return if (ascending) filtered.sortedWith(comparator)
+    else filtered.sortedWith(comparator.reversed())
 }
